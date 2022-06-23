@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "KomachiStateManager.h"
 #include "GameFramework/Character.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -20,6 +21,7 @@ public:
 	void MoveForward(float Axis);
 	void MoveRight(float Axis);
 
+	KomachiStateManager* komachiSM;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

@@ -20,7 +20,10 @@ AMiraiKomachi::AMiraiKomachi()
 void AMiraiKomachi::BeginPlay()
 {
 	Super::BeginPlay();
+	komachiSM = new KomachiStateManager();
 	
+	
+		
 }
 
 // Called every frame
