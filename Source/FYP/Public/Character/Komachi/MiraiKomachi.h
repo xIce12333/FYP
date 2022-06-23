@@ -21,7 +21,6 @@ public:
 	void MoveForward(float Axis);
 	void MoveRight(float Axis);
 
-	KomachiStateManager* komachiSM;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

@@ -12,15 +12,13 @@ AMiraiKomachi::AMiraiKomachi()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
-	GetCharacterMovement()->bOrientRotationToMovement = true;
-
+	
 }
 
 // Called when the game starts or when spawned
 void AMiraiKomachi::BeginPlay()
 {
 	Super::BeginPlay();
-	komachiSM = new KomachiStateManager();
 	
 	
 		
@@ -30,7 +28,6 @@ void AMiraiKomachi::BeginPlay()
 void AMiraiKomachi::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input
@@ -50,6 +47,7 @@ void AMiraiKomachi::MoveForward(float Axis)
 	FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
 	FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 	AddMovementInput(Direction, Axis);
+	
 }
 
 void AMiraiKomachi::MoveRight(float Axis)

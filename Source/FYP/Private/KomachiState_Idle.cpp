@@ -9,7 +9,7 @@ KomachiState_Idle::KomachiState_Idle()
 
 void KomachiState_Idle::EnterState(class KomachiStateManager* komachiSM)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Hello"));
+	float speed = 0;
 }
 
 void KomachiState_Idle::ChangeState(class KomachiStateManager* komachiSM)
