@@ -30,7 +30,6 @@ void AMiraiKomachi::BeginPlay()
 void AMiraiKomachi::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	AdjustMovementSpeed();
 }
 
 // Called to bind functionality to input
@@ -42,9 +41,12 @@ void AMiraiKomachi::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMiraiKomachi::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMiraiKomachi::MoveRight);
+
+	PlayerInputComponent->BindAction("ChangeMoveSpeed", IE_Pressed, this, &AMiraiKomachi::ToRunSpeed);
+	PlayerInputComponent->BindAction("ChangeMoveSpeed", IE_Released, this, &AMiraiKomachi::ToWalkSpeed);
 }
 
-void AMiraiKomachi::MoveForward(float Axis)
+void AMiraiKomachi::MoveForward(float Axis)		
 {
 	FRotator Rotation = Controller->GetControlRotation();
 	FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
@@ -61,16 +63,12 @@ void AMiraiKomachi::MoveRight(float Axis)
 	AddMovementInput(Direction, Axis);
 }
 
-void AMiraiKomachi::AdjustMovementSpeed()
+void AMiraiKomachi::ToRunSpeed()
 {
-	FKey Key = "K";
-	bool pressed = UGameplayStatics::GetPlayerController(GetWorld(), 0)->WasInputKeyJustPressed(Key);
-	bool released = UGameplayStatics::GetPlayerController(GetWorld(), 0)->WasInputKeyJustReleased(Key);
-	if (pressed)
-		GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
-	else if (released)
-		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
-//	UE_LOG(LogTemp, Warning, TEXT("speed: %f"), GetCharacterMovement()->MaxWalkSpeed);
-	
+	GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
 }
 
+void AMiraiKomachi::ToWalkSpeed()
+{
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+} 

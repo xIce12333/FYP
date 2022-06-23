@@ -20,7 +20,8 @@ public:
 
 	void MoveForward(float Axis);
 	void MoveRight(float Axis);
-	void AdjustMovementSpeed();
+	void ToRunSpeed();
+	void ToWalkSpeed();
 
 	float WalkSpeed = 300;
 	float RunSpeed = 700;
