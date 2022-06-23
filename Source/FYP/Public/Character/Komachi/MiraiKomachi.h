@@ -20,6 +20,10 @@ public:
 
 	void MoveForward(float Axis);
 	void MoveRight(float Axis);
+	void AdjustMovementSpeed();
+
+	float WalkSpeed = 300;
+	float RunSpeed = 700;
 
 protected:
 	// Called when the game starts or when spawned

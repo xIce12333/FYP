@@ -16,6 +16,7 @@ public:
 	UKomachiAnimController();
 
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+	void CheckMovement(AActor*);
 	UPROPERTY(BlueprintReadOnly)
 		bool isWalking;
 };

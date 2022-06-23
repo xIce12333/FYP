@@ -3,6 +3,8 @@
 
 #include "Character/Komachi/MiraiKomachi.h"
 
+#include "Kismet/GameplayStatics.h"
+
 // Sets default values
 AMiraiKomachi::AMiraiKomachi()
 {
@@ -19,7 +21,7 @@ AMiraiKomachi::AMiraiKomachi()
 void AMiraiKomachi::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 	
 		
 }
@@ -28,6 +30,7 @@ void AMiraiKomachi::BeginPlay()
 void AMiraiKomachi::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	AdjustMovementSpeed();
 }
 
 // Called to bind functionality to input
@@ -56,5 +59,18 @@ void AMiraiKomachi::MoveRight(float Axis)
 	FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
 	FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 	AddMovementInput(Direction, Axis);
+}
+
+void AMiraiKomachi::AdjustMovementSpeed()
+{
+	FKey Key = "K";
+	bool pressed = UGameplayStatics::GetPlayerController(GetWorld(), 0)->WasInputKeyJustPressed(Key);
+	bool released = UGameplayStatics::GetPlayerController(GetWorld(), 0)->WasInputKeyJustReleased(Key);
+	if (pressed)
+		GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
+	else if (released)
+		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+//	UE_LOG(LogTemp, Warning, TEXT("speed: %f"), GetCharacterMovement()->MaxWalkSpeed);
+	
 }
 
