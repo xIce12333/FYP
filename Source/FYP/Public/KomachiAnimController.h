@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Character/Komachi/MiraiKomachi.h"
 #include "KomachiAnimController.generated.h"
 
 /**
@@ -16,7 +17,12 @@ public:
 	UKomachiAnimController();
 
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
-	void CheckMovement(AActor*);
+	
 	UPROPERTY(BlueprintReadOnly)
-		bool isWalking;
+		TMap<FString, bool> AnimState;
+
+private:
+	void ChangeAnimationState(const FString NewState);
+	void CheckMovement(const AActor* OwningActor, const AMiraiKomachi* OwningCharacter);
+
 };
