@@ -23,6 +23,7 @@ void UKomachiAnimController::NativeUpdateAnimation(float DeltaSeconds)
 
 	Speed = OwningActor->GetVelocity().Size();
 	Direction = CalculateDirection(OwningActor->GetVelocity(), OwningActor->GetActorRotation());
+	bIsStrafing = OwningCharacter->KomachiState.bIsStrafing;
 	
 	CheckMovement(OwningActor, OwningCharacter);
 }

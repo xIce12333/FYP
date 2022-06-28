@@ -66,12 +66,14 @@ void AMiraiKomachi::MoveRight(const float Axis)
 
 void AMiraiKomachi::ToRunSpeed()
 {
-	GetCharacterMovement()->MaxWalkSpeed = KomachiState.RunSpeed;
+	if (!KomachiState.bIsStrafing)
+		GetCharacterMovement()->MaxWalkSpeed = KomachiState.RunSpeed;
 }
 
 void AMiraiKomachi::ToWalkSpeed()
 {
-	GetCharacterMovement()->MaxWalkSpeed = KomachiState.WalkSpeed;
+	if (!KomachiState.bIsStrafing)
+		GetCharacterMovement()->MaxWalkSpeed = KomachiState.WalkSpeed;
 }
 
 void AMiraiKomachi::ToggleStrafe()
@@ -79,6 +81,8 @@ void AMiraiKomachi::ToggleStrafe()
 	GetCharacterMovement()->MaxWalkSpeed = KomachiState.StrafeSpeed;
 	KomachiState.bIsStrafing = !KomachiState.bIsStrafing;
 	bUseControllerRotationYaw = !bUseControllerRotationYaw;
+	if (!KomachiState.bIsStrafing)
+		ToWalkSpeed();
 }
 
 

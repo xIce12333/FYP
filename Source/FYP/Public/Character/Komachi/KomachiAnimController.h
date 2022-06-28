@@ -22,7 +22,7 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 	
 	UPROPERTY(BlueprintReadOnly)
-		struct FKomachiStateManager AnimState;
+		bool bIsStrafing;
 	
 	UPROPERTY(BlueprintReadOnly)
 		float Speed;
