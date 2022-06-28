@@ -3,16 +3,34 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "KomachiState_Idle.h"
+#include "KomachiStateManager.generated.h"
 
 /**
  * 
  */
-class FYP_API KomachiStateManager
+
+USTRUCT(BlueprintType)
+struct FKomachiStateManager
 {
-public:
-	KomachiStateManager();
-	class KomachiBaseState* CurrentState;
-	class KomachiState_Idle* IdleState;
-	
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly)
+		bool bIdle = true;
+	UPROPERTY(BlueprintReadOnly)
+		bool bIsWalking = false;
+	UPROPERTY(BlueprintReadOnly)
+		bool bIsRunning = false;
+	UPROPERTY(BlueprintReadOnly)
+		bool bIsFalling = false;
+
+	void SetStateToFalse();
 };
+
+inline void FKomachiStateManager::SetStateToFalse()
+{
+	bIdle = false;
+	bIsWalking = false;
+	bIsRunning = false;
+	bIsFalling = false;
+}
+

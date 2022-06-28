@@ -3,11 +3,5 @@
 
 #include "KomachiStateManager.h"
 
-KomachiStateManager::KomachiStateManager()
-{
-	IdleState = new KomachiState_Idle();
-	CurrentState = IdleState;
-	CurrentState->EnterState(this);
-	
-}
+
 

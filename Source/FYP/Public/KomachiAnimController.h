@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Character/Komachi/MiraiKomachi.h"
+#include "KomachiStateManager.h"
 #include "KomachiAnimController.generated.h"
+
 
 /**
  * 
@@ -16,13 +18,13 @@ class FYP_API UKomachiAnimController: public UAnimInstance
 public:
 	UKomachiAnimController();
 
+	~UKomachiAnimController();
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 	
 	UPROPERTY(BlueprintReadOnly)
-		TMap<FString, bool> AnimState;
+		struct FKomachiStateManager AnimState;
 
 private:
-	void ChangeAnimationState(const FString NewState);
 	void CheckMovement(const AActor* OwningActor, const AMiraiKomachi* OwningCharacter);
 
 };
