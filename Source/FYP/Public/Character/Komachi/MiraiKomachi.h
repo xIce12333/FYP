@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "KomachiStateManager.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "MiraiKomachi.generated.h"
@@ -17,14 +18,10 @@ public:
 	// Sets default values for this character's properties
 	AMiraiKomachi();
 
-	void MoveForward(float Axis);
-	void MoveRight(float Axis);
-	void ToRunSpeed();
-	void ToWalkSpeed();
+	UPROPERTY(BlueprintReadOnly)
+		struct FKomachiStateManager KomachiState;
 
-	float WalkSpeed = 300;
-	float RunSpeed = 700;
-
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -36,4 +33,10 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+private:
+	void MoveForward(float Axis);
+	void MoveRight(float Axis);
+	void ToRunSpeed();
+	void ToWalkSpeed();
+	void ToggleStrafe();
 };

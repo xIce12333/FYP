@@ -23,8 +23,13 @@ public:
 	
 	UPROPERTY(BlueprintReadOnly)
 		struct FKomachiStateManager AnimState;
+	
+	UPROPERTY(BlueprintReadOnly)
+		float Speed;
+	UPROPERTY(BlueprintReadOnly)
+		float Direction;
 
 private:
 	void CheckMovement(const AActor* OwningActor, const AMiraiKomachi* OwningCharacter);
-
+	
 };

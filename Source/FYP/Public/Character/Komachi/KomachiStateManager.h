@@ -15,22 +15,15 @@ struct FKomachiStateManager
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly)
-		bool bIdle = true;
-	UPROPERTY(BlueprintReadOnly)
-		bool bIsWalking = false;
-	UPROPERTY(BlueprintReadOnly)
-		bool bIsRunning = false;
-	UPROPERTY(BlueprintReadOnly)
 		bool bIsFalling = false;
-
-	void SetStateToFalse();
+	UPROPERTY(BlueprintReadOnly)
+		float WalkSpeed = 300;
+	UPROPERTY(BlueprintReadOnly)
+		float RunSpeed = 700;
+	UPROPERTY(BlueprintReadOnly)
+		float StrafeSpeed = 200;
+	UPROPERTY(BlueprintReadOnly)
+		bool bIsStrafing = false;
 };
 
-inline void FKomachiStateManager::SetStateToFalse()
-{
-	bIdle = false;
-	bIsWalking = false;
-	bIsRunning = false;
-	bIsFalling = false;
-}
 

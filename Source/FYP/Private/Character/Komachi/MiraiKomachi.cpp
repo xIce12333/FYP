@@ -22,7 +22,7 @@ AMiraiKomachi::AMiraiKomachi()
 void AMiraiKomachi::BeginPlay()
 {
 	Super::BeginPlay();
-	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+	GetCharacterMovement()->MaxWalkSpeed = KomachiState.WalkSpeed;
 }
 
 // Called every frame
@@ -44,9 +44,10 @@ void AMiraiKomachi::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 	PlayerInputComponent->BindAction("ChangeMoveSpeed", IE_Pressed, this, &AMiraiKomachi::ToRunSpeed);
 	PlayerInputComponent->BindAction("ChangeMoveSpeed", IE_Released, this, &AMiraiKomachi::ToWalkSpeed);
+	PlayerInputComponent->BindAction("Strafe", IE_Pressed, this, &AMiraiKomachi::ToggleStrafe);
 }
 
-void AMiraiKomachi::MoveForward(float Axis)		
+void AMiraiKomachi::MoveForward(const float Axis)		
 {
 	FRotator Rotation = Controller->GetControlRotation();
 	FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
@@ -55,7 +56,7 @@ void AMiraiKomachi::MoveForward(float Axis)
 	
 }
 
-void AMiraiKomachi::MoveRight(float Axis)
+void AMiraiKomachi::MoveRight(const float Axis)
 {
 	FRotator Rotation = Controller->GetControlRotation();
 	FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
@@ -65,10 +66,19 @@ void AMiraiKomachi::MoveRight(float Axis)
 
 void AMiraiKomachi::ToRunSpeed()
 {
-	GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
+	GetCharacterMovement()->MaxWalkSpeed = KomachiState.RunSpeed;
 }
 
 void AMiraiKomachi::ToWalkSpeed()
 {
-	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
-} 
+	GetCharacterMovement()->MaxWalkSpeed = KomachiState.WalkSpeed;
+}
+
+void AMiraiKomachi::ToggleStrafe()
+{
+	GetCharacterMovement()->MaxWalkSpeed = KomachiState.StrafeSpeed;
+	KomachiState.bIsStrafing = !KomachiState.bIsStrafing;
+	bUseControllerRotationYaw = !bUseControllerRotationYaw;
+}
+
+
