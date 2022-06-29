@@ -18,7 +18,7 @@ public:
 	// Sets default values for this character's properties
 	AMiraiKomachi();
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		struct FKomachiStateManager KomachiState;
 
 	
@@ -39,4 +39,5 @@ private:
 	void ToRunSpeed();
 	void ToWalkSpeed();
 	void ToggleStrafe();
+	void Roll();
 };

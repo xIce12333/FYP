@@ -11,9 +11,6 @@ AMiraiKomachi::AMiraiKomachi()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-/*	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = false;
-	bUseControllerRotationRoll = false; */
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f);
 }
@@ -29,6 +26,7 @@ void AMiraiKomachi::BeginPlay()
 void AMiraiKomachi::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	KomachiState.bIsFalling = GetCharacterMovement()->IsFalling();
 //	UE_LOG(LogTemp, Warning, TEXT("IS FALLING: %s"), GetCharacterMovement()->IsFalling()? TEXT("true"): TEXT("false"));
 }
 
@@ -45,6 +43,7 @@ void AMiraiKomachi::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction("ChangeMoveSpeed", IE_Pressed, this, &AMiraiKomachi::ToRunSpeed);
 	PlayerInputComponent->BindAction("ChangeMoveSpeed", IE_Released, this, &AMiraiKomachi::ToWalkSpeed);
 	PlayerInputComponent->BindAction("Strafe", IE_Pressed, this, &AMiraiKomachi::ToggleStrafe);
+	
 }
 
 void AMiraiKomachi::MoveForward(const float Axis)		

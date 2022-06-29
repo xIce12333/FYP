@@ -23,7 +23,8 @@ public:
 	
 	UPROPERTY(BlueprintReadOnly)
 		bool bIsStrafing;
-	
+	UPROPERTY(BlueprintReadOnly)
+		bool bIsFalling;
 	UPROPERTY(BlueprintReadOnly)
 		float Speed;
 	UPROPERTY(BlueprintReadOnly)
@@ -31,5 +32,5 @@ public:
 
 private:
 	void CheckMovement(const AActor* OwningActor, const AMiraiKomachi* OwningCharacter);
-	
+	void GetState(const AActor* OwningActor, const AMiraiKomachi* OwningCharacter);
 };

@@ -24,6 +24,9 @@ struct FKomachiStateManager
 		float StrafeSpeed = 200;
 	UPROPERTY(BlueprintReadOnly)
 		bool bIsStrafing = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = Animations)
+		UAnimMontage* M_Roll;
 };
 
 

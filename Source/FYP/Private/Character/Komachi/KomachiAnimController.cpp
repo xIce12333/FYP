@@ -21,18 +21,20 @@ void UKomachiAnimController::NativeUpdateAnimation(float DeltaSeconds)
 	const AMiraiKomachi* OwningCharacter = Cast<AMiraiKomachi>(OwningActor);
 	if (OwningCharacter == nullptr) return;
 
+	GetState(OwningActor, OwningCharacter);
+//	CheckMovement(OwningActor, OwningCharacter);
+	GetControll
+}
+
+void UKomachiAnimController::GetState(const AActor* OwningActor, const AMiraiKomachi* OwningCharacter)
+{
 	Speed = OwningActor->GetVelocity().Size();
 	Direction = CalculateDirection(OwningActor->GetVelocity(), OwningActor->GetActorRotation());
 	bIsStrafing = OwningCharacter->KomachiState.bIsStrafing;
-	
-	CheckMovement(OwningActor, OwningCharacter);
+	bIsFalling = OwningCharacter->KomachiState.bIsFalling;
 }
-
 void UKomachiAnimController::CheckMovement(const AActor* OwningActor, const AMiraiKomachi* OwningCharacter)
 {
-	if (OwningCharacter->GetCharacterMovement()->IsFalling())
-	{
-	}
+		
 }
-
 
