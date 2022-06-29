@@ -48,6 +48,7 @@ void AMiraiKomachi::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 void AMiraiKomachi::MoveForward(const float Axis)		
 {
+	if(!KomachiState.bCanMove) return;
 	FRotator Rotation = Controller->GetControlRotation();
 	FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
 	FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
@@ -57,6 +58,7 @@ void AMiraiKomachi::MoveForward(const float Axis)
 
 void AMiraiKomachi::MoveRight(const float Axis)
 {
+	if(!KomachiState.bCanMove) return;
 	FRotator Rotation = Controller->GetControlRotation();
 	FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
 	FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
@@ -65,18 +67,21 @@ void AMiraiKomachi::MoveRight(const float Axis)
 
 void AMiraiKomachi::ToRunSpeed()
 {
+	if(!KomachiState.bCanMove) return;
 	if (!KomachiState.bIsStrafing)
 		GetCharacterMovement()->MaxWalkSpeed = KomachiState.RunSpeed;
 }
 
 void AMiraiKomachi::ToWalkSpeed()
 {
+	if(!KomachiState.bCanMove) return;
 	if (!KomachiState.bIsStrafing)
 		GetCharacterMovement()->MaxWalkSpeed = KomachiState.WalkSpeed;
 }
 
 void AMiraiKomachi::ToggleStrafe()
 {
+	if(!KomachiState.bCanMove) return;
 	GetCharacterMovement()->MaxWalkSpeed = KomachiState.StrafeSpeed;
 	KomachiState.bIsStrafing = !KomachiState.bIsStrafing;
 	bUseControllerRotationYaw = !bUseControllerRotationYaw;
@@ -86,6 +91,7 @@ void AMiraiKomachi::ToggleStrafe()
 
 void AMiraiKomachi::Roll()
 {
+	if(!KomachiState.bCanMove) return;
 	PlayAnimMontage(KomachiState.M_Roll);
 }
 
