@@ -28,13 +28,13 @@ void AMiraiKomachi::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	KomachiState.bIsFalling = GetCharacterMovement()->IsFalling();
 //	UE_LOG(LogTemp, Warning, TEXT("IS FALLING: %s"), GetCharacterMovement()->IsFalling()? TEXT("true"): TEXT("false"));
+	
 }
 
 // Called to bind functionality to input
 void AMiraiKomachi::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMiraiKomachi::MoveForward);
@@ -43,7 +43,7 @@ void AMiraiKomachi::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction("ChangeMoveSpeed", IE_Pressed, this, &AMiraiKomachi::ToRunSpeed);
 	PlayerInputComponent->BindAction("ChangeMoveSpeed", IE_Released, this, &AMiraiKomachi::ToWalkSpeed);
 	PlayerInputComponent->BindAction("Strafe", IE_Pressed, this, &AMiraiKomachi::ToggleStrafe);
-	
+	PlayerInputComponent->BindAction("Roll", IE_Pressed, this, &AMiraiKomachi::Roll);
 }
 
 void AMiraiKomachi::MoveForward(const float Axis)		
@@ -82,6 +82,11 @@ void AMiraiKomachi::ToggleStrafe()
 	bUseControllerRotationYaw = !bUseControllerRotationYaw;
 	if (!KomachiState.bIsStrafing)
 		ToWalkSpeed();
+}
+
+void AMiraiKomachi::Roll()
+{
+	PlayAnimMontage(KomachiState.M_Roll);
 }
 
 

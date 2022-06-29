@@ -23,7 +23,6 @@ void UKomachiAnimController::NativeUpdateAnimation(float DeltaSeconds)
 
 	GetState(OwningActor, OwningCharacter);
 //	CheckMovement(OwningActor, OwningCharacter);
-	GetControll
 }
 
 void UKomachiAnimController::GetState(const AActor* OwningActor, const AMiraiKomachi* OwningCharacter)

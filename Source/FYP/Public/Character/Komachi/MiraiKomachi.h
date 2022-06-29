@@ -22,6 +22,7 @@ public:
 		struct FKomachiStateManager KomachiState;
 
 	
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -40,4 +41,6 @@ private:
 	void ToWalkSpeed();
 	void ToggleStrafe();
 	void Roll();
+
+	UInputComponent* InputCom; 
 };
