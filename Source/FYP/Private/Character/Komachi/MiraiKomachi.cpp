@@ -2,7 +2,6 @@
 
 
 #include "Character/Komachi/MiraiKomachi.h"
-
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -26,9 +25,18 @@ void AMiraiKomachi::BeginPlay()
 void AMiraiKomachi::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	KomachiState.bIsFalling = GetCharacterMovement()->IsFalling();
 //	UE_LOG(LogTemp, Warning, TEXT("IS FALLING: %s"), GetCharacterMovement()->IsFalling()? TEXT("true"): TEXT("false"));
-	
+/*	float x, y;
+	UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetInputAnalogStickState(EControllerAnalogStick::CAS_LeftStick, x, y);
+	UE_LOG(LogTemp, Warning, TEXT("x and y: %f and %f"), x, y); */
+	if (UGameplayStatics::GetPlayerController(GetWorld(), 0))
+	{
+		float x, y;
+		UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetInputAnalogStickState(EControllerAnalogStick::CAS_LeftStick, x, y);
+	//	KomachiState.LeftJoyStick(x, y, 0);
+	}
+
+
 }
 
 // Called to bind functionality to input
@@ -92,7 +100,11 @@ void AMiraiKomachi::ToggleStrafe()
 void AMiraiKomachi::Roll()
 {
 	if(!KomachiState.bCanMove) return;
-	PlayAnimMontage(KomachiState.M_Roll);
+	PlayAnimMontage(KomachiState.M_Roll, 1.5);
+	//GetController()->SetControlRotation()
+//	GetController()->GetControlRotation()
+//	GetCharacterMovement()->speed
+	
 }
 
 

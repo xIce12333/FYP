@@ -23,11 +23,16 @@ struct FKomachiStateManager
 	UPROPERTY(BlueprintReadOnly)
 		float StrafeSpeed = 200;
 	UPROPERTY(BlueprintReadOnly)
+		float RollSpeed = 800;
+	UPROPERTY(BlueprintReadOnly)
 		bool bIsStrafing = false;
 	UPROPERTY(BlueprintReadOnly)
 		bool bCanMove = true;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = Animations)
 		UAnimMontage* M_Roll;
+
+	UPROPERTY(BlueprintReadOnly)
+		FVector LeftJoyStick;
 
 };
 
