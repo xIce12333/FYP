@@ -18,16 +18,17 @@ void UKomachiAnimNotify_Roll::Notify(USkeletalMeshComponent* MeshComp, UAnimSequ
 			Player->KomachiState.bCanMove = !Player->KomachiState.bCanMove;
 			if (!Player->KomachiState.bCanMove)	// rolling
 			{
+				Player->bUseControllerRotationYaw = false;
 				Player->GetCharacterMovement()->MaxWalkSpeed = Player->KomachiState.RollSpeed;
 				float x, y;
 				Player->GetWorld()->GetFirstPlayerController()->GetInputAnalogStickState(EControllerAnalogStick::CAS_LeftStick, x, y);
-				UE_LOG(LogTemp, Warning, TEXT("X and Y: %f and %f"), x, y);
-				const FVector Direction(y, x, 0);
+				FVector Direction(y, x, 0);
+				Player->SetActorRotation(Direction.Rotation());
 				Player->LaunchCharacter(Direction * 4000, true, true); 
 				return; 
 			} 
 			// finish rolling
-
+			Player->bUseControllerRotationYaw = (Player->KomachiState.bIsStrafing)? true : false;
 			Player->GetCharacterMovement()->MaxWalkSpeed = (Player->KomachiState.bIsStrafing)?  Player->KomachiState.StrafeSpeed : Player->KomachiState.WalkSpeed;
 		}
 
