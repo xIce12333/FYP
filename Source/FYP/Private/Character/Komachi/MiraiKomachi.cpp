@@ -25,18 +25,6 @@ void AMiraiKomachi::BeginPlay()
 void AMiraiKomachi::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-//	UE_LOG(LogTemp, Warning, TEXT("IS FALLING: %s"), GetCharacterMovement()->IsFalling()? TEXT("true"): TEXT("false"));
-/*	float x, y;
-	UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetInputAnalogStickState(EControllerAnalogStick::CAS_LeftStick, x, y);
-	UE_LOG(LogTemp, Warning, TEXT("x and y: %f and %f"), x, y); */
-	if (UGameplayStatics::GetPlayerController(GetWorld(), 0))
-	{
-		float x, y;
-		UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetInputAnalogStickState(EControllerAnalogStick::CAS_LeftStick, x, y);
-	//	KomachiState.LeftJoyStick(x, y, 0);
-	}
-
-
 }
 
 // Called to bind functionality to input

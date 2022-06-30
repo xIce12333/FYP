@@ -31,9 +31,6 @@ struct FKomachiStateManager
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = Animations)
 		UAnimMontage* M_Roll;
 
-	UPROPERTY(BlueprintReadOnly)
-		FVector LeftJoyStick;
-
 };
 
 

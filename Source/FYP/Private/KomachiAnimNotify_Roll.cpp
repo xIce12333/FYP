@@ -9,7 +9,6 @@
 void UKomachiAnimNotify_Roll::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
 //	UE_LOG(LogTemp, Warning, TEXT("Hi"));
-
 	
 	if (MeshComp && MeshComp->GetOwner())
 	{
@@ -17,18 +16,16 @@ void UKomachiAnimNotify_Roll::Notify(USkeletalMeshComponent* MeshComp, UAnimSequ
 		if (Player)
 		{
 			Player->KomachiState.bCanMove = !Player->KomachiState.bCanMove;
-			FString Str= Player->KomachiState.bCanMove? TEXT("true") : TEXT("false");
 			if (!Player->KomachiState.bCanMove)	// rolling
 			{
 				Player->GetCharacterMovement()->MaxWalkSpeed = Player->KomachiState.RollSpeed;
-	//			float x, y;
-				if (!UGameplayStatics::GetPlayerController(GetWorld(), 0))
-					UE_LOG(LogTemp, Warning, TEXT("Null"));
-			//	UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetInputAnalogStickState(EControllerAnalogStick::CAS_LeftStick, x, y);
-		/*		FVector Direction(x, y, 0);
-				Player->LaunchCharacter(Direction * 6000, true, true); */
-				return;
-			}
+				float x, y;
+				Player->GetWorld()->GetFirstPlayerController()->GetInputAnalogStickState(EControllerAnalogStick::CAS_LeftStick, x, y);
+				UE_LOG(LogTemp, Warning, TEXT("X and Y: %f and %f"), x, y);
+				const FVector Direction(y, x, 0);
+				Player->LaunchCharacter(Direction * 4000, true, true); 
+				return; 
+			} 
 			// finish rolling
 
 			Player->GetCharacterMovement()->MaxWalkSpeed = (Player->KomachiState.bIsStrafing)?  Player->KomachiState.StrafeSpeed : Player->KomachiState.WalkSpeed;
