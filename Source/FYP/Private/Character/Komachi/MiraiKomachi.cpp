@@ -11,7 +11,7 @@ AMiraiKomachi::AMiraiKomachi()
 	PrimaryActorTick.bCanEverTick = true;
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f);
+//	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f);
 }
 
 // Called when the game starts or when spawned
@@ -19,17 +19,18 @@ void AMiraiKomachi::BeginPlay()
 {
 	Super::BeginPlay();
 	GetCharacterMovement()->MaxWalkSpeed = KomachiState.WalkSpeed;
+	
 }
 
 // Called every frame
 void AMiraiKomachi::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (bUseControllerRotationYaw)
-		UE_LOG(LogTemp, Warning, TEXT("Yes"));
-	if (!bUseControllerRotationYaw)
-		UE_LOG(LogTemp, Warning, TEXT("No"));
-
+	if(KomachiState. bIsRolling)
+	{
+		GetCharacterMovement()->Velocity = KomachiState.RollVec * 800;
+	}
+	
 }
 
 // Called to bind functionality to input
@@ -94,11 +95,7 @@ void AMiraiKomachi::ToggleStrafe()
 void AMiraiKomachi::Roll()
 {
 	if(!KomachiState.bCanMove) return;
-	PlayAnimMontage(KomachiState.M_Roll, 2);
-	//GetController()->SetControlRotation()
-//	GetController()->GetControlRotation()
-//	GetCharacterMovement()->speed
-	
+	PlayAnimMontage(KomachiState.M_Roll, 1.5);
 }
 
 

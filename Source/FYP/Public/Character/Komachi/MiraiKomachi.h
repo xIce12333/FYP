@@ -41,6 +41,4 @@ private:
 	void ToWalkSpeed();
 	void ToggleStrafe();
 	void Roll();
-
-	UInputComponent* InputCom; 
 };

@@ -28,6 +28,10 @@ struct FKomachiStateManager
 		bool bIsStrafing = false;
 	UPROPERTY(BlueprintReadOnly)
 		bool bCanMove = true;
+	UPROPERTY(BlueprintReadOnly)
+		bool bIsRolling = false;
+	UPROPERTY(BlueprintReadOnly)
+		FVector RollVec;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = Animations)
 		UAnimMontage* M_Roll;
 
