@@ -30,6 +30,7 @@ void AMiraiKomachi::Tick(float DeltaTime)
 	{
 		GetCharacterMovement()->Velocity = KomachiState.RollVec * 800;
 	}
+
 	
 }
 
@@ -44,7 +45,6 @@ void AMiraiKomachi::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 	PlayerInputComponent->BindAction("ChangeMoveSpeed", IE_Pressed, this, &AMiraiKomachi::ToRunSpeed);
 	PlayerInputComponent->BindAction("ChangeMoveSpeed", IE_Released, this, &AMiraiKomachi::ToWalkSpeed);
-	PlayerInputComponent->BindAction("Strafe", IE_Pressed, this, &AMiraiKomachi::ToggleStrafe);
 	PlayerInputComponent->BindAction("Roll", IE_Pressed, this, &AMiraiKomachi::Roll);
 }
 
@@ -83,9 +83,9 @@ void AMiraiKomachi::ToWalkSpeed()
 
 void AMiraiKomachi::ToggleStrafe()
 {
-	if(!KomachiState.bCanMove) return;
 	GetCharacterMovement()->MaxWalkSpeed = KomachiState.StrafeSpeed;
 	KomachiState.bIsStrafing = !KomachiState.bIsStrafing;
+	if(!KomachiState.bCanMove) return;
 	bUseControllerRotationYaw = !bUseControllerRotationYaw;
 	if (!KomachiState.bIsStrafing)
 		ToWalkSpeed();

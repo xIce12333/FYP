@@ -39,6 +39,7 @@ private:
 	void MoveRight(float Axis);
 	void ToRunSpeed();
 	void ToWalkSpeed();
-	void ToggleStrafe();
+	UFUNCTION(BlueprintCallable)
+		void ToggleStrafe();
 	void Roll();
 };

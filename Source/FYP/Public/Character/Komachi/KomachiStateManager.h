@@ -24,7 +24,7 @@ struct FKomachiStateManager
 		float StrafeSpeed = 200;
 	UPROPERTY(BlueprintReadOnly)
 		float RollSpeed = 800;
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadWrite)
 		bool bIsStrafing = false;
 	UPROPERTY(BlueprintReadOnly)
 		bool bCanMove = true;
