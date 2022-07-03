@@ -11,7 +11,10 @@ AMiraiKomachi::AMiraiKomachi()
 	PrimaryActorTick.bCanEverTick = true;
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
-//	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f);
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f);
+
+	Weapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
+	Weapon->SetupAttachment(GetMesh(), "WeaponSocket");
 }
 
 // Called when the game starts or when spawned
@@ -85,6 +88,10 @@ void AMiraiKomachi::ToggleStrafe()
 {
 	GetCharacterMovement()->MaxWalkSpeed = KomachiState.StrafeSpeed;
 	KomachiState.bIsStrafing = !KomachiState.bIsStrafing;
+	if(KomachiState.bIsStrafing)
+	{
+
+	}
 	if(!KomachiState.bCanMove) return;
 	bUseControllerRotationYaw = !bUseControllerRotationYaw;
 	if (!KomachiState.bIsStrafing)

@@ -21,6 +21,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		struct FKomachiStateManager KomachiState;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+		class UStaticMeshComponent* Weapon;
 	
 	
 protected:
@@ -42,4 +44,6 @@ private:
 	UFUNCTION(BlueprintCallable)
 		void ToggleStrafe();
 	void Roll();
+	
+
 };
