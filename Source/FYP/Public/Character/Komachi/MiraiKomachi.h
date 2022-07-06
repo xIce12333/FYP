@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "KomachiStateManager.h"
 #include "Components/InputComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "MiraiKomachi.generated.h"
 
@@ -37,13 +38,25 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
-	void MoveForward(float Axis);
-	void MoveRight(float Axis);
+	void MoveForward(const float Axis);
+	void MoveRight(const float Axis);
+	UFUNCTION(BlueprintCallable)
+		void Attack(FVector StickValue);
+	
 	void ToRunSpeed();
 	void ToWalkSpeed();
 	UFUNCTION(BlueprintCallable)
 		void ToggleStrafe();
 	void Roll();
+
+	void MeleeN();
+	void MeleeE();
+	void MeleeS();
+	void MeleeW();
+	void MeleeNE();
+	void MeleeNW();
+	void MeleeSE();
+	void MeleeSW();
 	
 
 };

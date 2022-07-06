@@ -31,7 +31,11 @@ struct FKomachiStateManager
 	UPROPERTY(BlueprintReadOnly)
 		bool bIsRolling = false;
 	UPROPERTY(BlueprintReadOnly)
+		bool bIsAttacking = false;
+	UPROPERTY(BlueprintReadOnly)
 		FVector RollVec;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<UAnimMontage*> M_Attack;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = Animations)
 		UAnimMontage* M_Roll;
 

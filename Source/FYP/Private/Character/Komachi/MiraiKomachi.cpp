@@ -11,7 +11,7 @@ AMiraiKomachi::AMiraiKomachi()
 	PrimaryActorTick.bCanEverTick = true;
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f);
+//	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f);
 
 	Weapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
 	Weapon->SetupAttachment(GetMesh(), "WeaponSocket");
@@ -29,12 +29,11 @@ void AMiraiKomachi::BeginPlay()
 void AMiraiKomachi::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if(KomachiState. bIsRolling)
+	
+	if(KomachiState.bIsRolling)
 	{
 		GetCharacterMovement()->Velocity = KomachiState.RollVec * 800;
 	}
-
-	
 }
 
 // Called to bind functionality to input
@@ -45,6 +44,7 @@ void AMiraiKomachi::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMiraiKomachi::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMiraiKomachi::MoveRight);
+//	PlayerInputComponent->BindAxis("Attack", this, &AMiraiKomachi::Attack);
 
 	PlayerInputComponent->BindAction("ChangeMoveSpeed", IE_Pressed, this, &AMiraiKomachi::ToRunSpeed);
 	PlayerInputComponent->BindAction("ChangeMoveSpeed", IE_Released, this, &AMiraiKomachi::ToWalkSpeed);
@@ -84,14 +84,39 @@ void AMiraiKomachi::ToWalkSpeed()
 		GetCharacterMovement()->MaxWalkSpeed = KomachiState.WalkSpeed;
 }
 
+void AMiraiKomachi::Attack(FVector StickValue)
+{
+//	UE_LOG(LogTemp, Warning, TEXT("Value: %f and %f"), StickValue.X, StickValue.Y);
+	if (!KomachiState.bCanMove || StickValue.Size() < 0.5) return;
+
+	StickValue = StickValue.GetSafeNormal(); // Normalize magnitude to 1
+	StickValue.Y = -StickValue.Y;		// original y-axis is -1 when pointing upward 
+//	UE_LOG(LogTemp, Warning, TEXT("Value: %f and %f"), StickValue.X, StickValue.Y);
+	float Angle = UKismetMathLibrary::Acos(FVector::DotProduct(StickValue, FVector(1, 0, 0)));
+	Angle = Angle * 180 / PI;
+//	UE_LOG(LogTemp, Warning, TEXT("Value: %f"), Angle);
+	if (StickValue.Y > 0)		// 1st or 2nd quadrant
+	{
+		if (Angle <= 22.5)	MeleeE();
+		else if (Angle <= 67.5)	MeleeNE();
+		else if (Angle <= 112.5) MeleeN();
+		else if (Angle <= 157.5) MeleeNW();
+		else MeleeW();
+	}
+	else                // 3rd or 4th quadrant
+	{
+		if (Angle <= 22.5)	MeleeE();
+		else if (Angle <= 67.5)	MeleeSE();
+		else if (Angle <= 112.5) MeleeS();
+		else if (Angle <= 157.5) MeleeSW();
+		else MeleeW();
+	}
+}
+
 void AMiraiKomachi::ToggleStrafe()
 {
 	GetCharacterMovement()->MaxWalkSpeed = KomachiState.StrafeSpeed;
 	KomachiState.bIsStrafing = !KomachiState.bIsStrafing;
-	if(KomachiState.bIsStrafing)
-	{
-
-	}
 	if(!KomachiState.bCanMove) return;
 	bUseControllerRotationYaw = !bUseControllerRotationYaw;
 	if (!KomachiState.bIsStrafing)
@@ -104,5 +129,46 @@ void AMiraiKomachi::Roll()
 	if(!KomachiState.bCanMove) return;
 	PlayAnimMontage(KomachiState.M_Roll, 1.5);
 }
+
+void AMiraiKomachi::MeleeN()
+{
+	UE_LOG(LogTemp, Warning, TEXT("N"));
+}
+
+void AMiraiKomachi::MeleeE()
+{
+	UE_LOG(LogTemp, Warning, TEXT("E"));
+}
+
+void AMiraiKomachi::MeleeS()
+{
+	UE_LOG(LogTemp, Warning, TEXT("S"));
+}
+
+void AMiraiKomachi::MeleeW()
+{
+	UE_LOG(LogTemp, Warning, TEXT("W"));
+}
+
+void AMiraiKomachi::MeleeNE()
+{
+	UE_LOG(LogTemp, Warning, TEXT("NE"));
+}
+
+void AMiraiKomachi::MeleeNW()
+{
+	UE_LOG(LogTemp, Warning, TEXT("NW"));
+}
+
+void AMiraiKomachi::MeleeSE()
+{
+	UE_LOG(LogTemp, Warning, TEXT("SE"));
+}
+
+void AMiraiKomachi::MeleeSW()
+{
+	UE_LOG(LogTemp, Warning, TEXT("SW"));
+}
+
 
 
