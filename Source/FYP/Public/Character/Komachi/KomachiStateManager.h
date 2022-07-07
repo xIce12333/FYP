@@ -35,7 +35,7 @@ struct FKomachiStateManager
 	UPROPERTY(BlueprintReadOnly)
 		FVector RollVec;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<UAnimMontage*> M_Attack;
+		TSet<UAnimMontage*> M_Attack;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = Animations)
 		UAnimMontage* M_Roll;
 

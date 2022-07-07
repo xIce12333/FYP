@@ -36,6 +36,7 @@ void AMiraiKomachi::Tick(float DeltaTime)
 	}
 }
 
+#pragma region Input_and_Movement
 // Called to bind functionality to input
 void AMiraiKomachi::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -84,34 +85,6 @@ void AMiraiKomachi::ToWalkSpeed()
 		GetCharacterMovement()->MaxWalkSpeed = KomachiState.WalkSpeed;
 }
 
-void AMiraiKomachi::Attack(FVector StickValue)
-{
-//	UE_LOG(LogTemp, Warning, TEXT("Value: %f and %f"), StickValue.X, StickValue.Y);
-	if (!KomachiState.bCanMove || StickValue.Size() < 0.5) return;
-
-	StickValue = StickValue.GetSafeNormal(); // Normalize magnitude to 1
-	StickValue.Y = -StickValue.Y;		// original y-axis is -1 when pointing upward 
-//	UE_LOG(LogTemp, Warning, TEXT("Value: %f and %f"), StickValue.X, StickValue.Y);
-	float Angle = UKismetMathLibrary::Acos(FVector::DotProduct(StickValue, FVector(1, 0, 0)));
-	Angle = Angle * 180 / PI;
-//	UE_LOG(LogTemp, Warning, TEXT("Value: %f"), Angle);
-	if (StickValue.Y > 0)		// 1st or 2nd quadrant
-	{
-		if (Angle <= 22.5)	MeleeE();
-		else if (Angle <= 67.5)	MeleeNE();
-		else if (Angle <= 112.5) MeleeN();
-		else if (Angle <= 157.5) MeleeNW();
-		else MeleeW();
-	}
-	else                // 3rd or 4th quadrant
-	{
-		if (Angle <= 22.5)	MeleeE();
-		else if (Angle <= 67.5)	MeleeSE();
-		else if (Angle <= 112.5) MeleeS();
-		else if (Angle <= 157.5) MeleeSW();
-		else MeleeW();
-	}
-}
 
 void AMiraiKomachi::ToggleStrafe()
 {
@@ -130,14 +103,53 @@ void AMiraiKomachi::Roll()
 	PlayAnimMontage(KomachiState.M_Roll, 1.5);
 }
 
+#pragma endregion Input_and_Movement
+
+#pragma region Attack
+void AMiraiKomachi::Attack(FVector StickValue)
+{
+	if (!KomachiState.bCanMove || StickValue.Size() < 0.5) return;
+
+	StickValue = StickValue.GetSafeNormal(); // Normalize magnitude to 1
+	StickValue.Y = -StickValue.Y;		// original y-axis is -1 when pointing upward 
+	//	UE_LOG(LogTemp, Warning, TEXT("Value: %f and %f"), StickValue.X, StickValue.Y);
+	float Angle = UKismetMathLibrary::Acos(FVector::DotProduct(StickValue, FVector(1, 0, 0)));
+	Angle = Angle * 180 / PI;		// radian to degree
+	//	UE_LOG(LogTemp, Warning, TEXT("Value: %f"), Angle);
+	if (StickValue.Y > 0)		// 1st or 2nd quadrant
+		{
+		if (Angle <= 22.5)	MeleeE();
+		else if (Angle <= 67.5)	MeleeNE();
+		else if (Angle <= 112.5) MeleeN();
+		else if (Angle <= 157.5) MeleeNW();
+		else MeleeW();
+		}
+	else                // 3rd or 4th quadrant
+		{
+		if (Angle <= 22.5)	MeleeE();
+		else if (Angle <= 67.5)	MeleeSE();
+		else if (Angle <= 112.5) MeleeS();
+		else if (Angle <= 157.5) MeleeSW();
+		else MeleeW();
+		}
+}
+
 void AMiraiKomachi::MeleeN()
 {
 	UE_LOG(LogTemp, Warning, TEXT("N"));
+	
 }
 
 void AMiraiKomachi::MeleeE()
 {
 	UE_LOG(LogTemp, Warning, TEXT("E"));
+	
+	for (auto It = KomachiState.M_Attack.CreateConstIterator(); It; ++It)
+	{
+		int Id = It.GetId().AsInteger();
+		if (Id == 0)
+			PlayAnimMontage(*It);
+	}
 }
 
 void AMiraiKomachi::MeleeS()
@@ -148,27 +160,62 @@ void AMiraiKomachi::MeleeS()
 void AMiraiKomachi::MeleeW()
 {
 	UE_LOG(LogTemp, Warning, TEXT("W"));
+
+	for (auto It = KomachiState.M_Attack.CreateConstIterator(); It; ++It)
+	{
+		int Id = It.GetId().AsInteger();
+		if (Id == 5)
+			PlayAnimMontage(*It);
+	}
 }
 
 void AMiraiKomachi::MeleeNE()
 {
 	UE_LOG(LogTemp, Warning, TEXT("NE"));
+
+	for (auto It = KomachiState.M_Attack.CreateConstIterator(); It; ++It)
+	{
+		int Id = It.GetId().AsInteger();
+		if (Id == 1)
+			PlayAnimMontage(*It);
+	}
 }
 
 void AMiraiKomachi::MeleeNW()
 {
 	UE_LOG(LogTemp, Warning, TEXT("NW"));
+
+	for (auto It = KomachiState.M_Attack.CreateConstIterator(); It; ++It)
+	{
+		int Id = It.GetId().AsInteger();
+		if (Id == 2)
+			PlayAnimMontage(*It);
+	}
 }
 
 void AMiraiKomachi::MeleeSE()
 {
 	UE_LOG(LogTemp, Warning, TEXT("SE"));
+
+	for (auto It = KomachiState.M_Attack.CreateConstIterator(); It; ++It)
+	{
+		int Id = It.GetId().AsInteger();
+		if (Id == 3)
+			PlayAnimMontage(*It);
+	}
 }
 
 void AMiraiKomachi::MeleeSW()
 {
 	UE_LOG(LogTemp, Warning, TEXT("SW"));
-}
 
+	for (auto It = KomachiState.M_Attack.CreateConstIterator(); It; ++It)
+	{
+		int Id = It.GetId().AsInteger();
+		if (Id == 4)
+			PlayAnimMontage(*It);
+	}
+}
+#pragma endregion Attack
 
 
