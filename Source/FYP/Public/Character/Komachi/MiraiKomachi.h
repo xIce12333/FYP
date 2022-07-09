@@ -37,6 +37,9 @@ public:
 		bool bIsRolling = false;
 	UPROPERTY(BlueprintReadOnly)
 		bool bIsAttacking = false;
+	UPROPERTY(BlueprintReadOnly)
+		bool bIsDead = false;
+
 
 #pragma endregion Boolean
 
@@ -59,11 +62,20 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSet<UAnimMontage*> M_Attack;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = Animations)
 		UAnimMontage* M_Roll;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = Animations)
+		UAnimMontage* M_Hurt;
 
 #pragma endregion Montage
-	
+
+#pragma region Health
+
+	float MaxHealth = 50;
+	float CurrentHealth;
+
+#pragma endregion Health
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -74,6 +86,8 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 private:
 	void MoveForward(const float Axis);

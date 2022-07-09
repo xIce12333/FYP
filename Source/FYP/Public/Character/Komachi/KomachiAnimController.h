@@ -24,6 +24,8 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 		bool bIsStrafing;
 	UPROPERTY(BlueprintReadOnly)
+		bool bIsDead;
+	UPROPERTY(BlueprintReadOnly)
 		float Speed;
 	UPROPERTY(BlueprintReadOnly)
 		float Direction;

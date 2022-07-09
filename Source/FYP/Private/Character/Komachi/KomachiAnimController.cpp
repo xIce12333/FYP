@@ -30,6 +30,7 @@ void UKomachiAnimController::GetState(const AActor* OwningActor, const AMiraiKom
 	Speed = OwningActor->GetVelocity().Size();
 	Direction = CalculateDirection(OwningActor->GetVelocity(), OwningActor->GetActorRotation());
 	bIsStrafing = OwningCharacter->bIsStrafing;
+	bIsDead = OwningCharacter->bIsDead;
 }
 
 

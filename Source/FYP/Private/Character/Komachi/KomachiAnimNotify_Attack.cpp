@@ -13,6 +13,7 @@ void UKomachiAnimNotify_Attack::Notify(USkeletalMeshComponent* MeshComp, UAnimSe
 			if (Player->bCanMove)
 				Player->bCanAttack = false;
 			Player->bCanMove = !Player->bCanMove;
+			Player->bUseControllerRotationYaw = (Player->bIsStrafing)? true : false;
 		}
 	}
 }

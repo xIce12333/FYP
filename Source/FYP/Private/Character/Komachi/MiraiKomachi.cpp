@@ -10,6 +10,7 @@ AMiraiKomachi::AMiraiKomachi()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	CurrentHealth = MaxHealth;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 //	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f);
 
@@ -32,8 +33,12 @@ void AMiraiKomachi::Tick(float DeltaTime)
 	
 	if(bIsRolling)
 	{
-		GetCharacterMovement()->Velocity = RollVec * 800;
+		GetCharacterMovement()->Velocity = RollVec * 600;
 	}
+	if (bIsStrafing)
+		UE_LOG(LogTemp, Warning, TEXT("Yes"));
+	if (!bIsStrafing)
+		UE_LOG(LogTemp, Warning, TEXT("No"));
 }
 
 #pragma region Input_and_Movement
@@ -51,6 +56,7 @@ void AMiraiKomachi::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction("ChangeMoveSpeed", IE_Released, this, &AMiraiKomachi::ToWalkSpeed);
 	PlayerInputComponent->BindAction("Roll", IE_Pressed, this, &AMiraiKomachi::Roll);
 }
+
 
 void AMiraiKomachi::MoveForward(const float Axis)		
 {
@@ -218,4 +224,17 @@ void AMiraiKomachi::MeleeSW()
 }
 #pragma endregion Attack
 
-
+float AMiraiKomachi::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+	AActor* DamageCauser)
+{
+/*	CurrentHealth = FMath::Clamp(CurrentHealth - DamageAmount, 0.0f, MaxHealth);
+	bCanMove = false;
+	if (CurrentHealth <= 0)
+		bIsDead = true;
+	else
+	{
+		PlayAnimMontage(M_Hurt);
+	}
+	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser); */
+	return 0;
+}

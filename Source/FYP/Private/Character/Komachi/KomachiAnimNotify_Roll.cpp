@@ -12,7 +12,7 @@ void UKomachiAnimNotify_Roll::Notify(USkeletalMeshComponent* MeshComp, UAnimSequ
 		if (Player)
 		{
 			Player->bCanMove = !Player->bCanMove;
-			
+			Player->bCanAttack = !Player->bCanAttack;
 			if (!Player->bCanMove)	// start rolling
 				HandleBeginRolling(Player);
 			else    // finish rolling
