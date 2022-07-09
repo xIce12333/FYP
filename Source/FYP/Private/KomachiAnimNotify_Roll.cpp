@@ -11,9 +11,9 @@ void UKomachiAnimNotify_Roll::Notify(USkeletalMeshComponent* MeshComp, UAnimSequ
 		AMiraiKomachi* Player = Cast<AMiraiKomachi>(MeshComp->GetOwner());
 		if (Player)
 		{
-			Player->KomachiState.bCanMove = !Player->KomachiState.bCanMove;
+			Player->bCanMove = !Player->bCanMove;
 			
-			if (!Player->KomachiState.bCanMove)	// start rolling
+			if (!Player->bCanMove)	// start rolling
 				HandleBeginRolling(Player);
 			else    // finish rolling
 				HandleFinishRolling(Player);
@@ -24,20 +24,20 @@ void UKomachiAnimNotify_Roll::Notify(USkeletalMeshComponent* MeshComp, UAnimSequ
 void UKomachiAnimNotify_Roll::HandleBeginRolling(AMiraiKomachi* Player)
 {
 	Player->bUseControllerRotationYaw = false;
-	Player->GetCharacterMovement()->MaxWalkSpeed = Player->KomachiState.RollSpeed;
+	Player->GetCharacterMovement()->MaxWalkSpeed = Player->RollSpeed;
 	float x, y;
 	Player->GetWorld()->GetFirstPlayerController()->GetInputAnalogStickState(EControllerAnalogStick::CAS_LeftStick, y, x);
 	
 	const float ResultingYaw = FVector(x, y, 0).Rotation().Yaw + Player->GetWorld()->GetFirstPlayerController()->PlayerCameraManager->GetCameraRotation().Yaw;
 	const FRotator Direction = FRotator(0, ResultingYaw, 0);
-	Player->KomachiState.bIsRolling = true;
-	Player->KomachiState.RollVec = Direction.Vector();
+	Player->bIsRolling = true;
+	Player->RollVec = Direction.Vector();
 	Player->SetActorRotation(Direction);
 }
 
 void UKomachiAnimNotify_Roll::HandleFinishRolling(AMiraiKomachi* Player)
 {
-	Player->bUseControllerRotationYaw = (Player->KomachiState.bIsStrafing)? true : false;
-	Player->KomachiState.bIsRolling = false;
-	Player->GetCharacterMovement()->MaxWalkSpeed = (Player->KomachiState.bIsStrafing)?  Player->KomachiState.StrafeSpeed : Player->KomachiState.WalkSpeed;
+	Player->bUseControllerRotationYaw = (Player->bIsStrafing)? true : false;
+	Player->bIsRolling = false;
+	Player->GetCharacterMovement()->MaxWalkSpeed = (Player->bIsStrafing)?  Player->StrafeSpeed : Player->WalkSpeed;
 }

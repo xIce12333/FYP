@@ -10,7 +10,9 @@ void UKomachiAnimNotify_Attack::Notify(USkeletalMeshComponent* MeshComp, UAnimSe
 		AMiraiKomachi* Player = Cast<AMiraiKomachi>(MeshComp->GetOwner());
 		if (Player)
 		{
-			Player->KomachiState.bCanMove = !Player->KomachiState.bCanMove;
+			if (Player->bCanMove)
+				Player->bCanAttack = false;
+			Player->bCanMove = !Player->bCanMove;
 		}
 	}
 }

@@ -21,7 +21,7 @@ AMiraiKomachi::AMiraiKomachi()
 void AMiraiKomachi::BeginPlay()
 {
 	Super::BeginPlay();
-	GetCharacterMovement()->MaxWalkSpeed = KomachiState.WalkSpeed;
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 	
 }
 
@@ -30,9 +30,9 @@ void AMiraiKomachi::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	if(KomachiState.bIsRolling)
+	if(bIsRolling)
 	{
-		GetCharacterMovement()->Velocity = KomachiState.RollVec * 800;
+		GetCharacterMovement()->Velocity = RollVec * 800;
 	}
 }
 
@@ -54,7 +54,7 @@ void AMiraiKomachi::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 void AMiraiKomachi::MoveForward(const float Axis)		
 {
-	if(!KomachiState.bCanMove) return;
+	if(!bCanMove) return;
 	FRotator Rotation = Controller->GetControlRotation();
 	FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
 	FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
@@ -64,7 +64,7 @@ void AMiraiKomachi::MoveForward(const float Axis)
 
 void AMiraiKomachi::MoveRight(const float Axis)
 {
-	if(!KomachiState.bCanMove) return;
+	if(!bCanMove) return;
 	FRotator Rotation = Controller->GetControlRotation();
 	FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
 	FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
@@ -73,34 +73,34 @@ void AMiraiKomachi::MoveRight(const float Axis)
 
 void AMiraiKomachi::ToRunSpeed()
 {
-	if(!KomachiState.bCanMove) return;
-	if (!KomachiState.bIsStrafing)
-		GetCharacterMovement()->MaxWalkSpeed = KomachiState.RunSpeed;
+	if(!bCanMove) return;
+	if (!bIsStrafing)
+		GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
 }
 
 void AMiraiKomachi::ToWalkSpeed()
 {
-	if(!KomachiState.bCanMove) return;
-	if (!KomachiState.bIsStrafing)
-		GetCharacterMovement()->MaxWalkSpeed = KomachiState.WalkSpeed;
+	if(!bCanMove) return;
+	if (!bIsStrafing)
+		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
 
 
 void AMiraiKomachi::ToggleStrafe()
 {
-	GetCharacterMovement()->MaxWalkSpeed = KomachiState.StrafeSpeed;
-	KomachiState.bIsStrafing = !KomachiState.bIsStrafing;
-	if(!KomachiState.bCanMove) return;
+	GetCharacterMovement()->MaxWalkSpeed = StrafeSpeed;
+	bIsStrafing = !bIsStrafing;
+	if(!bCanMove) return;
 	bUseControllerRotationYaw = !bUseControllerRotationYaw;
-	if (!KomachiState.bIsStrafing)
+	if (!bIsStrafing)
 		ToWalkSpeed();
 	
 }
 
 void AMiraiKomachi::Roll()
 {
-	if(!KomachiState.bCanMove) return;
-	PlayAnimMontage(KomachiState.M_Roll, 1.5);
+	if(!bCanMove) return;
+	PlayAnimMontage(M_Roll, 1.5);
 }
 
 #pragma endregion Input_and_Movement
@@ -108,7 +108,7 @@ void AMiraiKomachi::Roll()
 #pragma region Attack
 void AMiraiKomachi::Attack(FVector StickValue)
 {
-	if (!KomachiState.bCanMove || StickValue.Size() < 0.5) return;
+	if (!bCanAttack || StickValue.Size() < 0.5) return;
 
 	StickValue = StickValue.GetSafeNormal(); // Normalize magnitude to 1
 	StickValue.Y = -StickValue.Y;		// original y-axis is -1 when pointing upward 
@@ -144,7 +144,7 @@ void AMiraiKomachi::MeleeE()
 {
 	UE_LOG(LogTemp, Warning, TEXT("E"));
 	
-	for (auto It = KomachiState.M_Attack.CreateConstIterator(); It; ++It)
+	for (auto It = M_Attack.CreateConstIterator(); It; ++It)
 	{
 		int Id = It.GetId().AsInteger();
 		if (Id == 0)
@@ -161,7 +161,7 @@ void AMiraiKomachi::MeleeW()
 {
 	UE_LOG(LogTemp, Warning, TEXT("W"));
 
-	for (auto It = KomachiState.M_Attack.CreateConstIterator(); It; ++It)
+	for (auto It = M_Attack.CreateConstIterator(); It; ++It)
 	{
 		int Id = It.GetId().AsInteger();
 		if (Id == 5)
@@ -173,7 +173,7 @@ void AMiraiKomachi::MeleeNE()
 {
 	UE_LOG(LogTemp, Warning, TEXT("NE"));
 
-	for (auto It = KomachiState.M_Attack.CreateConstIterator(); It; ++It)
+	for (auto It = M_Attack.CreateConstIterator(); It; ++It)
 	{
 		int Id = It.GetId().AsInteger();
 		if (Id == 1)
@@ -185,7 +185,7 @@ void AMiraiKomachi::MeleeNW()
 {
 	UE_LOG(LogTemp, Warning, TEXT("NW"));
 
-	for (auto It = KomachiState.M_Attack.CreateConstIterator(); It; ++It)
+	for (auto It = M_Attack.CreateConstIterator(); It; ++It)
 	{
 		int Id = It.GetId().AsInteger();
 		if (Id == 2)
@@ -197,7 +197,7 @@ void AMiraiKomachi::MeleeSE()
 {
 	UE_LOG(LogTemp, Warning, TEXT("SE"));
 
-	for (auto It = KomachiState.M_Attack.CreateConstIterator(); It; ++It)
+	for (auto It = M_Attack.CreateConstIterator(); It; ++It)
 	{
 		int Id = It.GetId().AsInteger();
 		if (Id == 3)
@@ -209,7 +209,7 @@ void AMiraiKomachi::MeleeSW()
 {
 	UE_LOG(LogTemp, Warning, TEXT("SW"));
 
-	for (auto It = KomachiState.M_Attack.CreateConstIterator(); It; ++It)
+	for (auto It = M_Attack.CreateConstIterator(); It; ++It)
 	{
 		int Id = It.GetId().AsInteger();
 		if (Id == 4)

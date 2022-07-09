@@ -19,12 +19,50 @@ public:
 	// Sets default values for this character's properties
 	AMiraiKomachi();
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		struct FKomachiStateManager KomachiState;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
 		class UStaticMeshComponent* Weapon;
+
+
+#pragma region Boolean
 	
+	UPROPERTY(BlueprintReadOnly)
+		bool bIsFalling = false;
+	UPROPERTY(BlueprintReadWrite)
+		bool bIsStrafing = false;
+	UPROPERTY(BlueprintReadOnly)
+		bool bCanMove = true;
+	UPROPERTY(BlueprintReadOnly)
+		bool bCanAttack = true;
+	UPROPERTY(BlueprintReadOnly)
+		bool bIsRolling = false;
+	UPROPERTY(BlueprintReadOnly)
+		bool bIsAttacking = false;
+
+#pragma endregion Boolean
+
+#pragma region Speed
+	
+	UPROPERTY(BlueprintReadOnly)
+		float WalkSpeed = 300;
+	UPROPERTY(BlueprintReadOnly)
+		float RunSpeed = 700;
+	UPROPERTY(BlueprintReadOnly)
+		float StrafeSpeed = 350;
+	UPROPERTY(BlueprintReadOnly)
+		float RollSpeed = 800;
+	UPROPERTY(BlueprintReadOnly)
+		FVector RollVec;
+
+#pragma endregion Speed
+
+#pragma region Montage
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSet<UAnimMontage*> M_Attack;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = Animations)
+		UAnimMontage* M_Roll;
+
+#pragma endregion Montage
 	
 protected:
 	// Called when the game starts or when spawned
