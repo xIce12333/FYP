@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "KomachiAnimNotify_Attack.h"
+#include "Character/Komachi/KomachiAnimNotify_Attack.h"
 
 void UKomachiAnimNotify_Attack::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
