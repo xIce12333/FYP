@@ -3,11 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EnemyBase.h"
 #include "GameFramework/Character.h"
 #include "SkeletonController.generated.h"
 
 UCLASS()
-class FYP_API ASkeletonController : public ACharacter
+class FYP_API ASkeletonController : public AEnemyBase
 {
 	GENERATED_BODY()
 

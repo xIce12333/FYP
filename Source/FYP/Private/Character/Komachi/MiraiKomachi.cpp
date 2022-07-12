@@ -35,10 +35,6 @@ void AMiraiKomachi::Tick(float DeltaTime)
 	{
 		GetCharacterMovement()->Velocity = RollVec * 600;
 	}
-	if (bIsStrafing)
-		UE_LOG(LogTemp, Warning, TEXT("Yes"));
-	if (!bIsStrafing)
-		UE_LOG(LogTemp, Warning, TEXT("No"));
 }
 
 #pragma region Input_and_Movement
@@ -231,9 +227,6 @@ float AMiraiKomachi::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 	bCanMove = false;
 	if (CurrentHealth <= 0)
 		bIsDead = true;
-	else
-	{
-		PlayAnimMontage(M_Hurt);
-	}
+	
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser); 
 }

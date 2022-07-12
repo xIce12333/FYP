@@ -13,7 +13,7 @@ enum class EnemyState : uint8
 	IDLE,
 	CHASE,
 	ATTACK,
-	HURT,
+	STUN,
 	DEAD
 };
 
@@ -39,7 +39,8 @@ protected:
 	virtual void BeginPlay() override;
 
 	bool PlayerLocked = false;
-	
+	bool bCanTakeDamage = true;
+	bool bIsDead = false;
 	float MaxHealth = 50;
 	float CurrentHealth;
 	
@@ -50,7 +51,8 @@ protected:
 	// if player enters this range, enemy will start attacking
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat")	
 		float AttackeRange;
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = Animations)
+		UAnimMontage* M_Die;
 	AActor* Player;
 
 	virtual void TickStateMachine();
@@ -58,8 +60,9 @@ protected:
 	virtual void StateIdle();
 	virtual void StateChase();
 	virtual void StateAttacK();
-	virtual void StateHurt();
+	virtual void StateStun();
 	virtual void StateDead();
+	void ResetCanTakeDamage();
 	
 	float FindDistance() const;		// Distance between enemy and player
 };
