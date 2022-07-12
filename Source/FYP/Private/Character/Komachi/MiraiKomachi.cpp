@@ -14,8 +14,8 @@ AMiraiKomachi::AMiraiKomachi()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 //	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f);
 
-	Weapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
-	Weapon->SetupAttachment(GetMesh(), "WeaponSocket");
+//	Weapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
+//	Weapon->SetupAttachment(GetMesh(), "WeaponSocket");
 }
 
 // Called when the game starts or when spawned
@@ -227,7 +227,7 @@ void AMiraiKomachi::MeleeSW()
 float AMiraiKomachi::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
 	AActor* DamageCauser)
 {
-/*	CurrentHealth = FMath::Clamp(CurrentHealth - DamageAmount, 0.0f, MaxHealth);
+	CurrentHealth = FMath::Clamp(CurrentHealth - DamageAmount, 0.0f, MaxHealth);
 	bCanMove = false;
 	if (CurrentHealth <= 0)
 		bIsDead = true;
@@ -235,6 +235,5 @@ float AMiraiKomachi::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 	{
 		PlayAnimMontage(M_Hurt);
 	}
-	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser); */
-	return 0;
+	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser); 
 }

@@ -3,6 +3,8 @@
 
 #include "Character/Komachi/KomachiAnimNotify_Attack.h"
 
+#include <windowsx.h>
+
 void UKomachiAnimNotify_Attack::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
 	if (MeshComp && MeshComp->GetOwner())
@@ -12,6 +14,8 @@ void UKomachiAnimNotify_Attack::Notify(USkeletalMeshComponent* MeshComp, UAnimSe
 		{
 			if (Player->bCanMove)
 				Player->bCanAttack = false;
+			//TArray<> list = Player->GetAllChildActors();
+			
 			Player->bCanMove = !Player->bCanMove;
 			Player->bUseControllerRotationYaw = (Player->bIsStrafing)? true : false;
 		}

@@ -19,8 +19,8 @@ public:
 	// Sets default values for this character's properties
 	AMiraiKomachi();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
-		class UStaticMeshComponent* Weapon;
+//	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+//		class UStaticMeshComponent* Weapon;
 
 
 #pragma region Boolean
@@ -70,16 +70,17 @@ public:
 
 #pragma endregion Montage
 
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
 #pragma region Health
 
 	float MaxHealth = 50;
 	float CurrentHealth;
 
 #pragma endregion Health
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -88,6 +89,8 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
+
 
 private:
 	void MoveForward(const float Axis);
@@ -99,8 +102,8 @@ private:
 	void ToWalkSpeed();
 	UFUNCTION(BlueprintCallable)
 		void ToggleStrafe();
+	
 	void Roll();
-
 	void MeleeN();
 	void MeleeE();
 	void MeleeS();
