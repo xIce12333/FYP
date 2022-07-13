@@ -3,6 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AIController.h"
+#include "Combatant.h"
+#include "Components/BoxComponent.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/Character.h"
 #include "EnemyBase.generated.h"
 
@@ -18,7 +22,7 @@ enum class EnemyState : uint8
 };
 
 UCLASS()
-class FYP_API AEnemyBase : public ACharacter
+class FYP_API AEnemyBase : public ACombatant
 {
 	GENERATED_BODY()
 
@@ -29,6 +33,17 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State Machine")
 		EnemyState ActiveState;
 
+	UPROPERTY(EditAnywhere)
+		USphereComponent* DetectSphere;
+
+	UPROPERTY(EditAnywhere)
+		USphereComponent* CombatSphere;
+
+	UPROPERTY(EditAnywhere)
+		UBoxComponent* AttackHitBoxLeft;
+	UPROPERTY(EditAnywhere)
+		UBoxComponent* AttackHitBoxRight;
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -37,12 +52,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	bool PlayerLocked = false;
+	
 	bool bCanTakeDamage = true;
-	bool bIsDead = false;
-	float MaxHealth = 50;
-	float CurrentHealth;
 	
 	// if player enters this range, enemy will start chasing the player
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat")	
@@ -50,19 +61,22 @@ protected:
 
 	// if player enters this range, enemy will start attacking
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat")	
-		float AttackeRange;
+		float AttackRange;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = Animations)
 		UAnimMontage* M_Die;
 	AActor* Player;
 
+	AAIController* AIController;
+	
 	virtual void TickStateMachine();
 	virtual void ChangeState(const EnemyState NewState);
 	virtual void StateIdle();
 	virtual void StateChase();
-	virtual void StateAttacK();
+	virtual void StateAttack();
 	virtual void StateStun();
 	virtual void StateDead();
 	void ResetCanTakeDamage();
+	void ResetCanMove();
 	
 	float FindDistance() const;		// Distance between enemy and player
 };

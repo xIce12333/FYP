@@ -3,15 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Combatant.h"
 #include "GameFramework/Character.h"
 #include "KomachiStateManager.h"
+#include "Weapon.h"
 #include "Components/InputComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "MiraiKomachi.generated.h"
 
 UCLASS()
-class FYP_API AMiraiKomachi : public ACharacter
+class FYP_API AMiraiKomachi : public ACombatant
 {
 	GENERATED_BODY()
 
@@ -19,34 +21,17 @@ public:
 	// Sets default values for this character's properties
 	AMiraiKomachi();
 
-//	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
-//		class UStaticMeshComponent* Weapon;
-
-
 #pragma region Boolean
 	
-	UPROPERTY(BlueprintReadOnly)
-		bool bIsFalling = false;
-	UPROPERTY(BlueprintReadWrite)
-		bool bIsStrafing = false;
-	UPROPERTY(BlueprintReadOnly)
-		bool bCanMove = true;
 	UPROPERTY(BlueprintReadOnly)
 		bool bCanAttack = true;
 	UPROPERTY(BlueprintReadOnly)
 		bool bIsRolling = false;
-	UPROPERTY(BlueprintReadOnly)
-		bool bIsAttacking = false;
-	UPROPERTY(BlueprintReadOnly)
-		bool bIsDead = false;
-
 
 #pragma endregion Boolean
 
 #pragma region Speed
 	
-	UPROPERTY(BlueprintReadOnly)
-		float WalkSpeed = 300;
 	UPROPERTY(BlueprintReadOnly)
 		float RunSpeed = 700;
 	UPROPERTY(BlueprintReadOnly)
@@ -73,13 +58,6 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-#pragma region Health
-
-	float MaxHealth = 50;
-	float CurrentHealth;
-
-#pragma endregion Health
 	
 public:	
 	// Called every frame
@@ -90,7 +68,10 @@ public:
 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
+	void EquipWeapon(AWeapon* Weapon);
 
+	UPROPERTY(BlueprintReadOnly)
+		AWeapon* WeaponEquipped;
 
 private:
 	void MoveForward(const float Axis);

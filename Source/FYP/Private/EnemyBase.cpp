@@ -11,6 +11,11 @@ AEnemyBase::AEnemyBase()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	CurrentHealth = MaxHealth;
+
+	AttackHitBoxLeft = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackHitBoxLeft"));
+	AttackHitBoxLeft->SetupAttachment(GetMesh(), TEXT("HitboxSocketLeft"));
+	AttackHitBoxRight = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackHitBoxRight"));
+	AttackHitBoxRight->SetupAttachment(GetMesh(), TEXT("HitboxSocketRight"));
 }
 
 // Called when the game starts or when spawned
@@ -27,7 +32,10 @@ void AEnemyBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	TickStateMachine();
-	
+	if (GetCurrentMontage())
+	{
+		UE_LOG(LogTemp,Warning, TEXT("Name: %s"), *GetCurrentMontage()->GetName());
+	}
 }
 
 
@@ -63,7 +71,7 @@ void AEnemyBase::TickStateMachine()
 		StateChase();
 		break;
 	case EnemyState::ATTACK:
-		StateAttacK();
+		StateAttack();
 		break;
 	case EnemyState::STUN:
 		StateStun();
@@ -100,13 +108,13 @@ void AEnemyBase::StateIdle()
 
 void AEnemyBase::StateChase()
 {
-	if (FindDistance() < AttackeRange)
+	if (FindDistance() < AttackRange)
 	{
 		ChangeState(EnemyState::ATTACK);
 	}
 }
 
-void AEnemyBase::StateAttacK()
+void AEnemyBase::StateAttack()
 {
 }
 
@@ -116,9 +124,8 @@ void AEnemyBase::StateStun()
 
 void AEnemyBase::StateDead()
 {
-	if (!GetCurrentMontage() && M_Die)
-		PlayAnimMontage(M_Die);
-//	if (GetCurrentMontage()->GetName() == "M")
+	if (GetCurrentMontage()) StopAnimMontage();
+	bIsDead = true;
 }
 
 void AEnemyBase::ResetCanTakeDamage()
@@ -126,10 +133,14 @@ void AEnemyBase::ResetCanTakeDamage()
 	bCanTakeDamage = true;
 }
 
+void AEnemyBase::ResetCanMove()
+{
+	bCanMove = true;
+}
+
 float AEnemyBase::FindDistance() const
 {
-	if (!Player) return 0;
-	return  FVector::Distance(GetActorLocation(), Player->GetActorLocation());
+	return  (Player)? FVector::Distance(GetActorLocation(), Player->GetActorLocation()) : 0;
 }
 
 #pragma endregion StateMachine

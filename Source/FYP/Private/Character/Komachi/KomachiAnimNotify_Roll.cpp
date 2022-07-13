@@ -37,7 +37,7 @@ void UKomachiAnimNotify_Roll::HandleBeginRolling(AMiraiKomachi* Player)
 
 void UKomachiAnimNotify_Roll::HandleFinishRolling(AMiraiKomachi* Player)
 {
-	Player->bUseControllerRotationYaw = (Player->bIsStrafing)? true : false;
+	Player->bUseControllerRotationYaw = (Player->bTargetLocked)? true : false;
 	Player->bIsRolling = false;
-	Player->GetCharacterMovement()->MaxWalkSpeed = (Player->bIsStrafing)?  Player->StrafeSpeed : Player->WalkSpeed;
+	Player->GetCharacterMovement()->MaxWalkSpeed = (Player->bTargetLocked)?  Player->StrafeSpeed : Player->WalkSpeed;
 }

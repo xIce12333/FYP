@@ -14,8 +14,6 @@ AMiraiKomachi::AMiraiKomachi()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 //	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f);
 
-//	Weapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
-//	Weapon->SetupAttachment(GetMesh(), "WeaponSocket");
 }
 
 // Called when the game starts or when spawned
@@ -76,14 +74,14 @@ void AMiraiKomachi::MoveRight(const float Axis)
 void AMiraiKomachi::ToRunSpeed()
 {
 	if(!bCanMove) return;
-	if (!bIsStrafing)
+	if (!bTargetLocked)
 		GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
 }
 
 void AMiraiKomachi::ToWalkSpeed()
 {
 	if(!bCanMove) return;
-	if (!bIsStrafing)
+	if (!bTargetLocked)
 		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
 
@@ -91,12 +89,11 @@ void AMiraiKomachi::ToWalkSpeed()
 void AMiraiKomachi::ToggleStrafe()
 {
 	GetCharacterMovement()->MaxWalkSpeed = StrafeSpeed;
-	bIsStrafing = !bIsStrafing;
+	bTargetLocked = !bTargetLocked;
 	if(!bCanMove) return;
 	bUseControllerRotationYaw = !bUseControllerRotationYaw;
-	if (!bIsStrafing)
+	if (!bTargetLocked)
 		ToWalkSpeed();
-	
 }
 
 void AMiraiKomachi::Roll()
@@ -110,7 +107,8 @@ void AMiraiKomachi::Roll()
 #pragma region Attack
 void AMiraiKomachi::Attack(FVector StickValue)
 {
-	if (!bCanAttack || StickValue.Size() < 0.5) return;
+
+	if (!bCanAttack || !WeaponEquipped || StickValue.Size() < 0.5) return;
 
 	StickValue = StickValue.GetSafeNormal(); // Normalize magnitude to 1
 	StickValue.Y = -StickValue.Y;		// original y-axis is -1 when pointing upward 
@@ -229,4 +227,14 @@ float AMiraiKomachi::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 		bIsDead = true;
 	
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser); 
+}
+
+void AMiraiKomachi::EquipWeapon(AWeapon* Weapon)
+{
+	if (WeaponEquipped) return;
+
+	Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, 
+		TEXT("WeaponSocketBottom"));
+
+	WeaponEquipped = Weapon;
 }
