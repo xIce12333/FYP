@@ -20,17 +20,12 @@ class FYP_API AMiraiKomachi : public ACombatant
 public:
 	// Sets default values for this character's properties
 	AMiraiKomachi();
-
-#pragma region Boolean
+	
 	
 	UPROPERTY(BlueprintReadOnly)
 		bool bCanAttack = true;
 	UPROPERTY(BlueprintReadOnly)
 		bool bIsRolling = false;
-
-#pragma endregion Boolean
-
-#pragma region Speed
 	
 	UPROPERTY(BlueprintReadOnly)
 		float RunSpeed = 700;
@@ -40,10 +35,6 @@ public:
 		float RollSpeed = 800;
 	UPROPERTY(BlueprintReadOnly)
 		FVector RollVec;
-
-#pragma endregion Speed
-
-#pragma region Montage
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSet<UAnimMontage*> M_Attack;
@@ -52,8 +43,6 @@ public:
 		UAnimMontage* M_Roll;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = Animations)
 		UAnimMontage* M_Hurt;
-
-#pragma endregion Montage
 
 protected:
 	// Called when the game starts or when spawned

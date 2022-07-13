@@ -32,6 +32,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
 		float MaxHealth = 50;
 	float CurrentHealth;
+
+	UPROPERTY(BlueprintReadOnly)
+		bool bCanDeadDamage;
 	
 	
 public:	

@@ -34,12 +34,6 @@ public:
 		EnemyState ActiveState;
 
 	UPROPERTY(EditAnywhere)
-		USphereComponent* DetectSphere;
-
-	UPROPERTY(EditAnywhere)
-		USphereComponent* CombatSphere;
-
-	UPROPERTY(EditAnywhere)
 		UBoxComponent* AttackHitBoxLeft;
 	UPROPERTY(EditAnywhere)
 		UBoxComponent* AttackHitBoxRight;
@@ -56,17 +50,29 @@ protected:
 	bool bCanTakeDamage = true;
 	
 	// if player enters this range, enemy will start chasing the player
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat")	
-		float ChaseRange;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")	
+		float ChaseRange = 800.0f
+	;
 	// if player enters this range, enemy will start attacking
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat")	
-		float AttackRange;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")	
+		float AttackRange = 200.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = Animations)
 		UAnimMontage* M_Die;
+	
 	AActor* Player;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+		float StartAttackDelayMin = 0.2f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+		float StartAttackDelayMax = 0.7f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float MoveToTargetRadius = 10.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
+		TSet<UAnimMontage*> M_Attack;
+
 	AAIController* AIController;
+	
+	FTimerHandle AttackTimer;
 	
 	virtual void TickStateMachine();
 	virtual void ChangeState(const EnemyState NewState);
@@ -75,8 +81,12 @@ protected:
 	virtual void StateAttack();
 	virtual void StateStun();
 	virtual void StateDead();
+	void Attack();
 	void ResetCanTakeDamage();
 	void ResetCanMove();
-	
-	float FindDistance() const;		// Distance between enemy and player
+	void MoveTowardsPlayer() const;
+
+	UFUNCTION(BlueprintCallable)
+		void AttackEnd();
+	float FindPlayerDistance() const;		// Distance between enemy and player
 };

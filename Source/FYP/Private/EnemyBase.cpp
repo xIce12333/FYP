@@ -24,6 +24,7 @@ void AEnemyBase::BeginPlay()
 	Super::BeginPlay();
 	ActiveState = EnemyState::IDLE;
 	Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	AIController = Cast<AAIController>(GetController());
 }
 
 
@@ -32,10 +33,6 @@ void AEnemyBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	TickStateMachine();
-	if (GetCurrentMontage())
-	{
-		UE_LOG(LogTemp,Warning, TEXT("Name: %s"), *GetCurrentMontage()->GetName());
-	}
 }
 
 
@@ -62,6 +59,8 @@ float AEnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent
 
 void AEnemyBase::TickStateMachine()	
 {
+	if (bIsDead) return;
+	
 	switch (ActiveState)
 	{
 	case EnemyState::IDLE:
@@ -95,27 +94,36 @@ void AEnemyBase::StateIdle()
 {
 	if (!Player) return;
 
-	FVector PlayerDirection = Player->GetActorLocation() - GetActorLocation();
-//	UE_LOG(LogTemp, Warning, TEXT("DOT: %s"), *PlayerDirection.GetSafeNormal().ToString());
-//	float DotProduct = FVector::DotProduct(GetActorForwardVector(), PlayerDirection.GetSafeNormal());
-//	UE_LOG(LogTemp, Warning, TEXT("DOT: %f"), DotProduct);
-/*	if (FindDistance() <= ChaseRange)
+	const float PlayerDistance = FindPlayerDistance();
+	if (PlayerDistance < AttackRange)
 	{
-		PlayerLocked = true;
+		ChangeState(EnemyState::ATTACK);
+	}
+	else if (FindPlayerDistance() < ChaseRange)
+	{
 		ChangeState(EnemyState::CHASE);
-	} */
+	}
+		
 }
 
 void AEnemyBase::StateChase()
 {
-	if (FindDistance() < AttackRange)
+	if (FindPlayerDistance() < AttackRange)
 	{
 		ChangeState(EnemyState::ATTACK);
+	}
+	else
+	{
+		MoveTowardsPlayer();
 	}
 }
 
 void AEnemyBase::StateAttack()
 {
+	if (bIsAttacking) return;
+	bIsAttacking = true;
+	const float StartAttackDelay = FMath::RandRange(StartAttackDelayMin, StartAttackDelayMax);
+	GetWorldTimerManager().SetTimer(AttackTimer, this, &AEnemyBase::Attack, StartAttackDelay);
 }
 
 void AEnemyBase::StateStun()
@@ -128,6 +136,23 @@ void AEnemyBase::StateDead()
 	bIsDead = true;
 }
 
+void AEnemyBase::Attack()
+{
+	bCanDeadDamage = true;
+	if (AIController)
+		AIController->StopMovement();
+	const int RandomAttack = FMath::RandRange(0, M_Attack.Num() - 1);
+	
+	for (auto It = M_Attack.CreateConstIterator(); It; ++It)
+	{
+		if (It.GetId().AsInteger() == RandomAttack)
+		{
+			PlayAnimMontage(*It);
+			break;
+		}
+	}
+}
+
 void AEnemyBase::ResetCanTakeDamage()
 {
 	bCanTakeDamage = true;
@@ -138,7 +163,27 @@ void AEnemyBase::ResetCanMove()
 	bCanMove = true;
 }
 
-float AEnemyBase::FindDistance() const
+void AEnemyBase::MoveTowardsPlayer() const
+{
+	if(AIController)
+	{
+		FNavPathSharedPtr NavPath;
+		FAIMoveRequest MoveRequest;
+
+		MoveRequest.SetGoalActor(Player);
+		MoveRequest.SetAcceptanceRadius(MoveToTargetRadius);
+		AIController->MoveTo(MoveRequest, &NavPath);
+	}
+}
+
+void AEnemyBase::AttackEnd()
+{
+	bCanDeadDamage = false;
+	bIsAttacking = false;
+	ChangeState(EnemyState::CHASE);
+}
+
+float AEnemyBase::FindPlayerDistance() const
 {
 	return  (Player)? FVector::Distance(GetActorLocation(), Player->GetActorLocation()) : 0;
 }
