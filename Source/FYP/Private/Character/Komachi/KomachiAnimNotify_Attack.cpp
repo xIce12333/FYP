@@ -14,7 +14,6 @@ void UKomachiAnimNotify_Attack::Notify(USkeletalMeshComponent* MeshComp, UAnimSe
 		{
 			if (Player->bCanMove)
 				Player->bCanAttack = false;
-			//TArray<> list = Player->GetAllChildActors();
 			
 			Player->bCanMove = !Player->bCanMove;
 			Player->bUseControllerRotationYaw = (Player->bTargetLocked)? true : false;

@@ -62,6 +62,13 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 		AWeapon* WeaponEquipped;
 
+	UFUNCTION()
+	virtual void WeaponHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor
+		, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+		bool bFromSweep, const FHitResult& SweepResult);
+
+	void ApplyDamage(float DamageAmount);
+	
 private:
 	void MoveForward(const float Axis);
 	void MoveRight(const float Axis);
@@ -82,6 +89,4 @@ private:
 	void MeleeNW();
 	void MeleeSE();
 	void MeleeSW();
-	
-
 };

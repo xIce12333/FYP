@@ -43,35 +43,35 @@ void AEnemyBase::Tick(float DeltaTime)
 }
 
 
-float AEnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
-	AActor* DamageCauser)
+void AEnemyBase::ApplyDamage(const float DamageAmount)
 {
-	if (bIsInvulnerable) return 0;
-
-	bIsInvulnerable = true;
-	FTimerHandle DelayTimer;
-	GetWorld()->GetTimerManager().SetTimer(DelayTimer, this, &AEnemyBase::ResetInvulnerability, 0.5); // prevent taking damage more than once
 	CurrentHealth = FMath::Clamp(CurrentHealth - DamageAmount, 0.0f, MaxHealth);
-	if (CurrentHealth <= 0)
-	{
-		ChangeState(EnemyState::DEAD);
-	}
-	UE_LOG(LogTemp, Warning, TEXT("Hit! HP: %f"), CurrentHealth);
+	if (CurrentHealth > 0) return;
 
-	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	if (AIController) AIController->StopMovement();
+
+	ChangeState(EnemyState::DEAD);
+	GetWorld()->GetTimerManager().SetTimer(DisposeTimer, this, &AEnemyBase::DisposeEnemy, 5.0f);
+		
+	
+	
 }
-
-
-#pragma region StateMachine
 
 void AEnemyBase::AttackHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (bCanDealDamage)
 	{
-		
+		AMiraiKomachi* Target = Cast<AMiraiKomachi>(OtherActor);
+		if (Target)
+		{
+			bCanDealDamage = false;
+			Target->ApplyDamage(Damage);
+		}
 	}
 }
+
+#pragma region StateMachine
 
 void AEnemyBase::TickStateMachine()	
 {
@@ -109,7 +109,6 @@ void AEnemyBase::ChangeState(const EnemyState NewState)
 void AEnemyBase::StateIdle()
 {
 	if (!Player) return;
-
 	const float PlayerDistance = FindPlayerDistance();
 	if (PlayerDistance < AttackRange)
 	{
@@ -153,7 +152,10 @@ void AEnemyBase::StateDead()
 {
 	if (GetCurrentMontage()) StopAnimMontage();
 	bIsDead = true;
+	bCanDealDamage = false;
 }
+
+#pragma endregion StateMachine
 
 void AEnemyBase::Attack()
 {
@@ -170,11 +172,6 @@ void AEnemyBase::Attack()
 			break;
 		}
 	}
-}
-
-void AEnemyBase::ResetInvulnerability()
-{
-	bIsInvulnerable = false;
 }
 
 void AEnemyBase::ResetCanMove()
@@ -216,4 +213,7 @@ void AEnemyBase::FacePlayer()
 	SetActorRotation(Rotation);
 }
 
-#pragma endregion StateMachine
+void AEnemyBase::DisposeEnemy()
+{
+	Destroy();
+}

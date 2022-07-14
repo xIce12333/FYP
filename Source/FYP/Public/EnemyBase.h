@@ -40,8 +40,8 @@ public:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	
+	void ApplyDamage(float Damage);
 	
 protected:
 	// Called when the game starts or when spawned
@@ -69,7 +69,8 @@ protected:
 		float MoveToTargetRadius = 10.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
 		TSet<UAnimMontage*> M_Attack;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+		float Damage = 10.0f;
 	AAIController* AIController;
 
 	
@@ -79,6 +80,7 @@ protected:
 			bool bFromSweep, const FHitResult& SweepResult);
 	
 	FTimerHandle AttackTimer;
+	FTimerHandle DisposeTimer;
 	
 	virtual void TickStateMachine();
 	virtual void ChangeState(const EnemyState NewState);
@@ -88,7 +90,6 @@ protected:
 	virtual void StateStun();
 	virtual void StateDead();
 	virtual void Attack();
-	void ResetInvulnerability();
 	void ResetCanMove();
 	void MoveTowardsPlayer() const;
 
@@ -96,4 +97,5 @@ protected:
 		void AttackEnd();
 	float FindPlayerDistance() const;		// Distance between enemy and player
 	void FacePlayer();
+	void DisposeEnemy();
 };

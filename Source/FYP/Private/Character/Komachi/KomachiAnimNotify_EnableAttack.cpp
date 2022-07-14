@@ -11,6 +11,7 @@ void UKomachiAnimNotify_EnableAttack::Notify(USkeletalMeshComponent* MeshComp, U
 		if (Player)
 		{
 			Player->bCanAttack = true;
+			Player->bCanDealDamage = false;
 		}
 	} 
 }

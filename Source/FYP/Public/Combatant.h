@@ -23,6 +23,8 @@ public:
 		bool bIsDead;
 	UPROPERTY(BlueprintReadOnly)
 		bool bCanMove;
+	UPROPERTY(BlueprintReadOnly)
+		bool bCanDealDamage;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -32,10 +34,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
 		float MaxHealth = 50;
 	float CurrentHealth;
-
-	UPROPERTY(BlueprintReadOnly)
-		bool bCanDealDamage;
-	
 	
 public:	
 	// Called every frame

@@ -34,6 +34,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UBoxComponent* AttackHitBox;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float DamageAmount = 10.0f;
+
 	UFUNCTION()
 		virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, 

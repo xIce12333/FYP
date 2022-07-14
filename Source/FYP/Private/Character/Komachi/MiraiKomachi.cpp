@@ -2,6 +2,8 @@
 
 
 #include "Character/Komachi/MiraiKomachi.h"
+
+#include "EnemyBase.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -112,10 +114,8 @@ void AMiraiKomachi::Attack(FVector StickValue)
 
 	StickValue = StickValue.GetSafeNormal(); // Normalize magnitude to 1
 	StickValue.Y = -StickValue.Y;		// original y-axis is -1 when pointing upward 
-	//	UE_LOG(LogTemp, Warning, TEXT("Value: %f and %f"), StickValue.X, StickValue.Y);
 	float Angle = UKismetMathLibrary::Acos(FVector::DotProduct(StickValue, FVector(1, 0, 0)));
 	Angle = Angle * 180 / PI;		// radian to degree
-	//	UE_LOG(LogTemp, Warning, TEXT("Value: %f"), Angle);
 	if (StickValue.Y > 0)		// 1st or 2nd quadrant
 		{
 		if (Angle <= 22.5)	MeleeE();
@@ -237,4 +237,38 @@ void AMiraiKomachi::EquipWeapon(AWeapon* Weapon)
 		TEXT("WeaponSocketBottom"));
 
 	WeaponEquipped = Weapon;
+	WeaponEquipped->AttackHitBox->OnComponentBeginOverlap.AddDynamic(this, &AMiraiKomachi::WeaponHitBoxOnBeginOverlap);
+}
+
+void AMiraiKomachi::WeaponHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (bCanDealDamage)
+	{
+		AEnemyBase* Enemy = Cast<AEnemyBase>(OtherActor);
+		if (Enemy)
+		{
+			bCanDealDamage = false;
+			UE_LOG(LogTemp, Warning, TEXT("Hit!"));
+			Enemy->ApplyDamage(WeaponEquipped->DamageAmount);
+		}
+
+	}
+}
+
+void AMiraiKomachi::ApplyDamage(float DamageAmount)
+{
+	if (bIsDead) return;
+	CurrentHealth = FMath::Clamp(CurrentHealth - DamageAmount, 0.0f, MaxHealth);
+	bCanMove = false;
+	if (CurrentHealth <= 0)
+	{
+		bIsDead = true;
+		if (GetCurrentMontage()) StopAnimMontage();
+	}
+	else
+	{
+		if (M_Hurt) PlayAnimMontage(M_Hurt);
+	}
+		
 }
