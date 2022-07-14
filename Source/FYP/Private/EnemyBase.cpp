@@ -3,7 +3,9 @@
 
 #include "EnemyBase.h"
 
+#include "Character/Komachi/MiraiKomachi.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 AEnemyBase::AEnemyBase()
@@ -11,7 +13,7 @@ AEnemyBase::AEnemyBase()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	CurrentHealth = MaxHealth;
-
+	bIsInvulnerable = false;
 	AttackHitBoxLeft = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackHitBoxLeft"));
 	AttackHitBoxLeft->SetupAttachment(GetMesh(), TEXT("HitboxSocketLeft"));
 	AttackHitBoxRight = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackHitBoxRight"));
@@ -25,6 +27,9 @@ void AEnemyBase::BeginPlay()
 	ActiveState = EnemyState::IDLE;
 	Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	AIController = Cast<AAIController>(GetController());
+
+	AttackHitBoxLeft->OnComponentBeginOverlap.AddDynamic(this, &AEnemyBase::AttackHitBoxOnBeginOverlap);
+	AttackHitBoxRight->OnComponentBeginOverlap.AddDynamic(this, &AEnemyBase::AttackHitBoxOnBeginOverlap);
 }
 
 
@@ -33,17 +38,19 @@ void AEnemyBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	TickStateMachine();
+	
+	
 }
 
 
 float AEnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
 	AActor* DamageCauser)
 {
-	if (!bCanTakeDamage) return 0;
+	if (bIsInvulnerable) return 0;
 
-	bCanTakeDamage = false;
+	bIsInvulnerable = true;
 	FTimerHandle DelayTimer;
-	GetWorld()->GetTimerManager().SetTimer(DelayTimer, this, &AEnemyBase::ResetCanTakeDamage, 0.5); // prevent taking damage more than once
+	GetWorld()->GetTimerManager().SetTimer(DelayTimer, this, &AEnemyBase::ResetInvulnerability, 0.5); // prevent taking damage more than once
 	CurrentHealth = FMath::Clamp(CurrentHealth - DamageAmount, 0.0f, MaxHealth);
 	if (CurrentHealth <= 0)
 	{
@@ -56,6 +63,15 @@ float AEnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent
 
 
 #pragma region StateMachine
+
+void AEnemyBase::AttackHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (bCanDealDamage)
+	{
+		
+	}
+}
 
 void AEnemyBase::TickStateMachine()	
 {
@@ -121,13 +137,16 @@ void AEnemyBase::StateChase()
 void AEnemyBase::StateAttack()
 {
 	if (bIsAttacking) return;
+	if (AIController) AIController->StopMovement();
 	bIsAttacking = true;
+	FacePlayer();
 	const float StartAttackDelay = FMath::RandRange(StartAttackDelayMin, StartAttackDelayMax);
 	GetWorldTimerManager().SetTimer(AttackTimer, this, &AEnemyBase::Attack, StartAttackDelay);
 }
 
 void AEnemyBase::StateStun()
 {
+	
 }
 
 void AEnemyBase::StateDead()
@@ -138,7 +157,7 @@ void AEnemyBase::StateDead()
 
 void AEnemyBase::Attack()
 {
-	bCanDeadDamage = true;
+	bCanDealDamage = true;
 	if (AIController)
 		AIController->StopMovement();
 	const int RandomAttack = FMath::RandRange(0, M_Attack.Num() - 1);
@@ -153,9 +172,9 @@ void AEnemyBase::Attack()
 	}
 }
 
-void AEnemyBase::ResetCanTakeDamage()
+void AEnemyBase::ResetInvulnerability()
 {
-	bCanTakeDamage = true;
+	bIsInvulnerable = false;
 }
 
 void AEnemyBase::ResetCanMove()
@@ -178,7 +197,7 @@ void AEnemyBase::MoveTowardsPlayer() const
 
 void AEnemyBase::AttackEnd()
 {
-	bCanDeadDamage = false;
+	bCanDealDamage = false;
 	bIsAttacking = false;
 	ChangeState(EnemyState::CHASE);
 }
@@ -186,6 +205,15 @@ void AEnemyBase::AttackEnd()
 float AEnemyBase::FindPlayerDistance() const
 {
 	return  (Player)? FVector::Distance(GetActorLocation(), Player->GetActorLocation()) : 0;
+}
+
+void AEnemyBase::FacePlayer()
+{
+	if (!Player) return;
+	FVector Direction = Player->GetActorLocation() - GetActorLocation();
+	Direction = FVector(Direction.X, Direction.Y, 0);
+	const FRotator Rotation = FRotationMatrix::MakeFromX(Direction).Rotator();
+	SetActorRotation(Rotation);
 }
 
 #pragma endregion StateMachine

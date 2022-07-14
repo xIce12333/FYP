@@ -34,7 +34,7 @@ protected:
 	float CurrentHealth;
 
 	UPROPERTY(BlueprintReadOnly)
-		bool bCanDeadDamage;
+		bool bCanDealDamage;
 	
 	
 public:	

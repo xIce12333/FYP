@@ -12,7 +12,7 @@ ACombatant::ACombatant()
 	bIsAttacking = false;
 	bIsDead = false;
 	bCanMove = true;
-	bCanDeadDamage = false;
+	bCanDealDamage = false;
 	CurrentHealth = MaxHealth;
 }
 

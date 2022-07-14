@@ -47,7 +47,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
-	bool bCanTakeDamage = true;
+	bool bIsInvulnerable;
 	
 	// if player enters this range, enemy will start chasing the player
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")	
@@ -71,6 +71,12 @@ protected:
 		TSet<UAnimMontage*> M_Attack;
 
 	AAIController* AIController;
+
+	
+	UFUNCTION()
+		virtual void AttackHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor
+			, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+			bool bFromSweep, const FHitResult& SweepResult);
 	
 	FTimerHandle AttackTimer;
 	
@@ -81,12 +87,13 @@ protected:
 	virtual void StateAttack();
 	virtual void StateStun();
 	virtual void StateDead();
-	void Attack();
-	void ResetCanTakeDamage();
+	virtual void Attack();
+	void ResetInvulnerability();
 	void ResetCanMove();
 	void MoveTowardsPlayer() const;
 
 	UFUNCTION(BlueprintCallable)
 		void AttackEnd();
 	float FindPlayerDistance() const;		// Distance between enemy and player
+	void FacePlayer();
 };
