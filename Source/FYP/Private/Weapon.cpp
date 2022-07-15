@@ -51,9 +51,6 @@ void AWeapon::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* O
 		{
 			Player->EquipWeapon(this);
 		}
-		
-
-
 	}
 }
 

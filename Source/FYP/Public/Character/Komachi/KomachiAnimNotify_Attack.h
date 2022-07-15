@@ -16,6 +16,4 @@ class FYP_API UKomachiAnimNotify_Attack : public UAnimNotify
 public:
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
 	
-private:
-	void HandleAttack();
 };

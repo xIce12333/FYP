@@ -42,6 +42,14 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	
 	void ApplyDamage(float Damage);
+
+	bool MeleeE;
+	bool MeleeW;
+	bool MeleeNE;
+	bool MeleeNW;
+	bool MeleeSE;
+	bool MeleeSW;
+	float AttackSpeed = 700;
 	
 protected:
 	// Called when the game starts or when spawned
@@ -51,8 +59,7 @@ protected:
 	
 	// if player enters this range, enemy will start chasing the player
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")	
-		float ChaseRange = 800.0f
-	;
+		float ChaseRange = 800.0f;
 	// if player enters this range, enemy will start attacking
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")	
 		float AttackRange = 200.0f;
@@ -98,4 +105,5 @@ protected:
 	float FindPlayerDistance() const;		// Distance between enemy and player
 	void FacePlayer();
 	void DisposeEnemy();
+	void ResetAttackBool();
 };

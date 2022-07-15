@@ -8,6 +8,7 @@
 #include "KomachiStateManager.h"
 #include "Weapon.h"
 #include "Components/InputComponent.h"
+#include "EnemyBase.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "MiraiKomachi.generated.h"
@@ -23,9 +24,27 @@ public:
 	
 	
 	UPROPERTY(BlueprintReadOnly)
-		bool bCanAttack = true;
+		bool bCanAttack;
 	UPROPERTY(BlueprintReadOnly)
-		bool bIsRolling = false;
+		bool bIsRolling;
+	UPROPERTY(BlueprintReadOnly)
+		bool bIsGuarding;
+	UPROPERTY(BlueprintReadOnly)
+		bool bGuardPressed;
+	UPROPERTY(BlueprintReadOnly)
+		bool bCanGuard;
+	UPROPERTY(BlueprintReadOnly)
+		bool bGuardE;
+	UPROPERTY(BlueprintReadOnly)
+		bool bGuardW;
+	UPROPERTY(BlueprintReadOnly)
+		bool bGuardNE;
+	UPROPERTY(BlueprintReadOnly)
+		bool bGuardNW;
+	UPROPERTY(BlueprintReadOnly)
+		bool bGuardSE;
+	UPROPERTY(BlueprintReadOnly)
+		bool bGuardSW;
 	
 	UPROPERTY(BlueprintReadOnly)
 		float RunSpeed = 700;
@@ -34,8 +53,14 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 		float RollSpeed = 800;
 	UPROPERTY(BlueprintReadOnly)
+		float MeleeAttackSpeed = 800;
+	UPROPERTY(BlueprintReadOnly)
+		float KnockBackSpeed = 800;
+	UPROPERTY(BlueprintReadOnly)
 		FVector RollVec;
-	
+
+	bool CheckGuardSuccessful(const AEnemyBase* Enemy) const;
+	void GuardSuccessful();
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSet<UAnimMontage*> M_Attack;
 	
@@ -43,7 +68,10 @@ public:
 		UAnimMontage* M_Roll;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = Animations)
 		UAnimMontage* M_Hurt;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = Animations)
+		UAnimMontage* M_Guard;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = Animations)
+		UAnimMontage* M_GuardSuccessful;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -54,9 +82,7 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-
+	
 	void EquipWeapon(AWeapon* Weapon);
 
 	UPROPERTY(BlueprintReadOnly)
@@ -68,7 +94,7 @@ public:
 		bool bFromSweep, const FHitResult& SweepResult);
 
 	void ApplyDamage(float DamageAmount);
-	
+	void StopGuard();
 private:
 	void MoveForward(const float Axis);
 	void MoveRight(const float Axis);
@@ -79,6 +105,7 @@ private:
 	void ToWalkSpeed();
 	UFUNCTION(BlueprintCallable)
 		void ToggleStrafe();
+	void ToggleGuard();
 	
 	void Roll();
 	void MeleeN();

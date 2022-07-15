@@ -2,7 +2,6 @@
 
 
 #include "EnemyBase.h"
-
 #include "Character/Komachi/MiraiKomachi.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -39,7 +38,6 @@ void AEnemyBase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	TickStateMachine();
 	
-	
 }
 
 
@@ -66,7 +64,16 @@ void AEnemyBase::AttackHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedCompo
 		if (Target)
 		{
 			bCanDealDamage = false;
-			Target->ApplyDamage(Damage);
+			if (Target->CheckGuardSuccessful(this))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Guard Success!"));
+				Target->GuardSuccessful();
+			}
+			else 
+			{
+				Target->ApplyDamage(Damage);
+			}
+
 		}
 	}
 }
@@ -114,7 +121,7 @@ void AEnemyBase::StateIdle()
 	{
 		ChangeState(EnemyState::ATTACK);
 	}
-	else if (FindPlayerDistance() < ChaseRange)
+	else if (PlayerDistance < ChaseRange)
 	{
 		ChangeState(EnemyState::CHASE);
 	}
@@ -163,6 +170,32 @@ void AEnemyBase::Attack()
 	if (AIController)
 		AIController->StopMovement();
 	const int RandomAttack = FMath::RandRange(0, M_Attack.Num() - 1);
+	switch (RandomAttack)
+	{
+	case 0:
+		MeleeE = true;
+		UE_LOG(LogTemp, Warning, TEXT("E Attack!"));
+		break;
+	case 1:
+		MeleeNE = true;
+		UE_LOG(LogTemp, Warning, TEXT("NE Attack!"));
+		break;
+	case 2:
+		UE_LOG(LogTemp, Warning, TEXT("NW Attack!"));
+		MeleeNW = true;
+		break;
+	case 3:
+		MeleeSE = true;
+		UE_LOG(LogTemp, Warning, TEXT("SE Attack!"));
+		break;
+	case 4:
+		MeleeSW = true;
+		UE_LOG(LogTemp, Warning, TEXT("SW Attack!"));
+		break;
+	default:
+		MeleeW = true;
+		UE_LOG(LogTemp, Warning, TEXT("W Attack!"));
+	}
 	
 	for (auto It = M_Attack.CreateConstIterator(); It; ++It)
 	{
@@ -196,6 +229,7 @@ void AEnemyBase::AttackEnd()
 {
 	bCanDealDamage = false;
 	bIsAttacking = false;
+	ResetAttackBool();
 	ChangeState(EnemyState::CHASE);
 }
 
@@ -216,4 +250,14 @@ void AEnemyBase::FacePlayer()
 void AEnemyBase::DisposeEnemy()
 {
 	Destroy();
+}
+
+void AEnemyBase::ResetAttackBool()
+{
+	MeleeE = false;
+	MeleeW = false;
+	MeleeNE = false;
+	MeleeNW = false;
+	MeleeSE = false;
+	MeleeSW = false;
 }

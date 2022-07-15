@@ -2,8 +2,6 @@
 
 
 #include "Character/Komachi/MiraiKomachi.h"
-
-#include "EnemyBase.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -14,8 +12,11 @@ AMiraiKomachi::AMiraiKomachi()
 
 	CurrentHealth = MaxHealth;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
-//	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f);
-
+	bCanAttack = true;
+	bIsRolling = false;
+	bIsGuarding = false;
+	bCanGuard = true;
+	StopGuard();
 }
 
 // Called when the game starts or when spawned
@@ -46,11 +47,13 @@ void AMiraiKomachi::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMiraiKomachi::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMiraiKomachi::MoveRight);
-//	PlayerInputComponent->BindAxis("Attack", this, &AMiraiKomachi::Attack);
 
 	PlayerInputComponent->BindAction("ChangeMoveSpeed", IE_Pressed, this, &AMiraiKomachi::ToRunSpeed);
 	PlayerInputComponent->BindAction("ChangeMoveSpeed", IE_Released, this, &AMiraiKomachi::ToWalkSpeed);
 	PlayerInputComponent->BindAction("Roll", IE_Pressed, this, &AMiraiKomachi::Roll);
+	PlayerInputComponent->BindAction("Guard", IE_Pressed, this, &AMiraiKomachi::ToggleGuard);
+	PlayerInputComponent->BindAction("Guard", IE_Released, this, &AMiraiKomachi::ToggleGuard);
+	
 }
 
 
@@ -98,6 +101,11 @@ void AMiraiKomachi::ToggleStrafe()
 		ToWalkSpeed();
 }
 
+void AMiraiKomachi::ToggleGuard()
+{
+	bGuardPressed = !bGuardPressed;
+}
+
 void AMiraiKomachi::Roll()
 {
 	if(!bCanMove) return;
@@ -109,9 +117,7 @@ void AMiraiKomachi::Roll()
 #pragma region Attack
 void AMiraiKomachi::Attack(FVector StickValue)
 {
-
-	if (!bCanAttack || !WeaponEquipped || StickValue.Size() < 0.5) return;
-
+	if (!bCanAttack || !WeaponEquipped || !bCanGuard ||StickValue.Size() < 0.5) return;
 	StickValue = StickValue.GetSafeNormal(); // Normalize magnitude to 1
 	StickValue.Y = -StickValue.Y;		// original y-axis is -1 when pointing upward 
 	float Angle = UKismetMathLibrary::Acos(FVector::DotProduct(StickValue, FVector(1, 0, 0)));
@@ -143,7 +149,12 @@ void AMiraiKomachi::MeleeN()
 void AMiraiKomachi::MeleeE()
 {
 	UE_LOG(LogTemp, Warning, TEXT("E"));
-	
+
+	if (bGuardPressed && M_Guard)
+	{
+		PlayAnimMontage(M_Guard);
+		return;
+	}
 	for (auto It = M_Attack.CreateConstIterator(); It; ++It)
 	{
 		int Id = It.GetId().AsInteger();
@@ -161,6 +172,12 @@ void AMiraiKomachi::MeleeW()
 {
 	UE_LOG(LogTemp, Warning, TEXT("W"));
 
+	if (bGuardPressed && M_Guard)
+	{
+		bGuardW = true;
+		PlayAnimMontage(M_Guard);
+		return;
+	}
 	for (auto It = M_Attack.CreateConstIterator(); It; ++It)
 	{
 		int Id = It.GetId().AsInteger();
@@ -173,6 +190,12 @@ void AMiraiKomachi::MeleeNE()
 {
 	UE_LOG(LogTemp, Warning, TEXT("NE"));
 
+	if (bGuardPressed && M_Guard)
+	{
+		bGuardNE = true;
+		PlayAnimMontage(M_Guard);
+		return;
+	}
 	for (auto It = M_Attack.CreateConstIterator(); It; ++It)
 	{
 		int Id = It.GetId().AsInteger();
@@ -185,6 +208,12 @@ void AMiraiKomachi::MeleeNW()
 {
 	UE_LOG(LogTemp, Warning, TEXT("NW"));
 
+	if (bGuardPressed && M_Guard)
+	{
+		bGuardNW = true;
+		PlayAnimMontage(M_Guard);
+		return;
+	}
 	for (auto It = M_Attack.CreateConstIterator(); It; ++It)
 	{
 		int Id = It.GetId().AsInteger();
@@ -197,6 +226,12 @@ void AMiraiKomachi::MeleeSE()
 {
 	UE_LOG(LogTemp, Warning, TEXT("SE"));
 
+	if (bGuardPressed && M_Guard)
+	{
+		bGuardSE = true;
+		PlayAnimMontage(M_Guard);
+		return;
+	}
 	for (auto It = M_Attack.CreateConstIterator(); It; ++It)
 	{
 		int Id = It.GetId().AsInteger();
@@ -209,6 +244,12 @@ void AMiraiKomachi::MeleeSW()
 {
 	UE_LOG(LogTemp, Warning, TEXT("SW"));
 
+	if (bGuardPressed && M_Guard)
+	{
+		bGuardSW = true;
+		PlayAnimMontage(M_Guard);
+		return;
+	}
 	for (auto It = M_Attack.CreateConstIterator(); It; ++It)
 	{
 		int Id = It.GetId().AsInteger();
@@ -216,18 +257,8 @@ void AMiraiKomachi::MeleeSW()
 			PlayAnimMontage(*It);
 	}
 }
-#pragma endregion Attack
 
-float AMiraiKomachi::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
-	AActor* DamageCauser)
-{
-	CurrentHealth = FMath::Clamp(CurrentHealth - DamageAmount, 0.0f, MaxHealth);
-	bCanMove = false;
-	if (CurrentHealth <= 0)
-		bIsDead = true;
-	
-	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser); 
-}
+#pragma endregion Attack
 
 void AMiraiKomachi::EquipWeapon(AWeapon* Weapon)
 {
@@ -243,16 +274,14 @@ void AMiraiKomachi::EquipWeapon(AWeapon* Weapon)
 void AMiraiKomachi::WeaponHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	AEnemyBase* Enemy = Cast<AEnemyBase>(OtherActor);
 	if (bCanDealDamage)
 	{
-		AEnemyBase* Enemy = Cast<AEnemyBase>(OtherActor);
 		if (Enemy)
 		{
 			bCanDealDamage = false;
-			UE_LOG(LogTemp, Warning, TEXT("Hit!"));
 			Enemy->ApplyDamage(WeaponEquipped->DamageAmount);
 		}
-
 	}
 }
 
@@ -260,15 +289,51 @@ void AMiraiKomachi::ApplyDamage(float DamageAmount)
 {
 	if (bIsDead) return;
 	CurrentHealth = FMath::Clamp(CurrentHealth - DamageAmount, 0.0f, MaxHealth);
+	if (bIsRolling) return;
 	bCanMove = false;
 	if (CurrentHealth <= 0)
 	{
 		bIsDead = true;
 		if (GetCurrentMontage()) StopAnimMontage();
+		bCanMove = false;
 	}
 	else
 	{
+		if (GetCurrentMontage()) StopAnimMontage();
 		if (M_Hurt) PlayAnimMontage(M_Hurt);
 	}
 		
+}
+
+void AMiraiKomachi::StopGuard()
+{
+	bCanMove = true;
+	bCanMove = true;
+	bCanAttack = true;
+	bIsGuarding = false;
+	bGuardE = false;
+	bGuardW = false;
+	bGuardNE = false;
+	bGuardNW = false;
+	bGuardSE = false;
+	bGuardSW = false;
+}
+
+
+bool AMiraiKomachi::CheckGuardSuccessful(const AEnemyBase* Enemy) const
+{
+	if (!bIsGuarding) return false;
+	if (Enemy->MeleeE && bGuardE) return true;
+	else if (Enemy->MeleeW && bGuardW) return true;
+	else if (Enemy->MeleeNE && bGuardSE) return true;
+	else if (Enemy->MeleeNW && bGuardSW) return true;
+	else if (Enemy->MeleeSE && bGuardNE) return true;
+	else if (Enemy->MeleeSW && bGuardNW) return true;
+	return false;
+}
+
+void AMiraiKomachi::GuardSuccessful()
+{
+	if (M_GuardSuccessful)
+		PlayAnimMontage(M_GuardSuccessful);
 }
