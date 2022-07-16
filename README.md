@@ -11,4 +11,5 @@ Right Stick: Attack
 Pressing L2 button and use right stick: Guard
 Even though the guard animation looks the same, the game logic is not. 
 
+If you guard 2 times, the enemy will stun for 3 seconds and the damage it receives will be 50% larger.
 
