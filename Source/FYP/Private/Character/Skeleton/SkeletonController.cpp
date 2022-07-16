@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SkeletonController.h"
+#include "Character/Skeleton//SkeletonController.h"
 
 // Sets default values
 ASkeletonController::ASkeletonController()

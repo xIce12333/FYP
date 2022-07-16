@@ -3,12 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Combatant.h"
+#include "Character/BaseClass/Combatant.h"
 #include "GameFramework/Character.h"
 #include "KomachiStateManager.h"
 #include "Weapon.h"
 #include "Components/InputComponent.h"
-#include "EnemyBase.h"
+#include "Character/BaseClass/EnemyBase.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "MiraiKomachi.generated.h"

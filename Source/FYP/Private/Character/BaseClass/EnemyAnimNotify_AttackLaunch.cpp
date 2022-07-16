@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "EnemyAnimNotify_AttackLaunch.h"
+#include "Character/BaseClass/EnemyAnimNotify_AttackLaunch.h"
 
 void UEnemyAnimNotify_AttackLaunch::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {

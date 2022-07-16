@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "EnemyBase.h"
+#include "Character/BaseClass/EnemyBase.h"
 #include "GameFramework/Character.h"
 #include "SkeletonController.generated.h"
 

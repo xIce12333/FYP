@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "KomachiAnimNotify_GuardSuccess.h"
+#include "Character/Komachi/KomachiAnimNotify_GuardSuccess.h"
 
 #include "Character/Komachi/MiraiKomachi.h"
 
