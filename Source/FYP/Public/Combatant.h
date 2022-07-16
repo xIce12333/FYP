@@ -25,6 +25,11 @@ public:
 		bool bCanMove;
 	UPROPERTY(BlueprintReadOnly)
 		bool bCanDealDamage;
+	UFUNCTION(BlueprintImplementableEvent, Category = "Combat")
+		void GenerateDamageText();
+
+	UPROPERTY(BlueprintReadOnly)
+		int CurrentDamage;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

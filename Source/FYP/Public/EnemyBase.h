@@ -51,6 +51,9 @@ public:
 	bool MeleeSW;
 	float AttackSpeed = 700;
 	
+	UPROPERTY(BlueprintReadOnly)
+		bool bIsStunning;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -65,7 +68,8 @@ protected:
 		float AttackRange = 200.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = Animations)
 		UAnimMontage* M_Die;
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = Animations)
+		UAnimMontage* M_Choke;
 	AActor* Player;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
@@ -88,6 +92,7 @@ protected:
 	
 	FTimerHandle AttackTimer;
 	FTimerHandle DisposeTimer;
+	FTimerHandle StunTimer;
 	
 	virtual void TickStateMachine();
 	virtual void ChangeState(const EnemyState NewState);
@@ -106,4 +111,9 @@ protected:
 	void FacePlayer();
 	void DisposeEnemy();
 	void ResetAttackBool();
+	int MaxStunCount = 2;
+	int CurrentStunCount;
+	float StunTime = 3;
+	bool CheckStun();
+	void StunEnd();
 };

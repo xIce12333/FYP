@@ -293,7 +293,8 @@ void AMiraiKomachi::ApplyDamage(float DamageAmount)
 	if (bIsDead || bIsInvulnerable || bIsRolling) return;
 	bCanMove = false;
 	CurrentHealth = FMath::Clamp(CurrentHealth - DamageAmount, 0.0f, MaxHealth);
-	GenerateDamageText(DamageAmount);
+	CurrentDamage = DamageAmount;
+	GenerateDamageText();
 	if (CurrentHealth <= 0)
 	{
 		bIsDead = true;
@@ -310,8 +311,8 @@ void AMiraiKomachi::ApplyDamage(float DamageAmount)
 
 void AMiraiKomachi::StopGuard()
 {
-	bCanMove = true;
-	bCanMove = true;
+	if (!bIsDead)
+		bCanMove = true;
 	bCanAttack = true;
 	bIsGuarding = false;
 	bGuardE = false;

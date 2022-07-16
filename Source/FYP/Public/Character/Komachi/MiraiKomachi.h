@@ -96,9 +96,6 @@ public:
 
 	void ApplyDamage(float DamageAmount);
 	void StopGuard();
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "Combat")
-		void GenerateDamageText(int Damage);
 private:
 	void MoveForward(const float Axis);
 	void MoveRight(const float Axis);

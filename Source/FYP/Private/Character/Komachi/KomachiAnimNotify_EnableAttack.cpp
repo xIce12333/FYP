@@ -12,7 +12,6 @@ void UKomachiAnimNotify_EnableAttack::Notify(USkeletalMeshComponent* MeshComp, U
 		{
 			Player->bCanAttack = true;
 			const FVector ForwardDir = -Player->GetActorRotation().Vector();
-			Player->bCanDealDamage = true;
 			Player->LaunchCharacter(ForwardDir * Player->MeleeAttackSpeed, true, true);
 		}
 	} 

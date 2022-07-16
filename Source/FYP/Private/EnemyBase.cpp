@@ -12,6 +12,8 @@ AEnemyBase::AEnemyBase()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	CurrentHealth = MaxHealth;
+	CurrentStunCount = MaxStunCount;
+	bIsStunning = false;
 	bIsInvulnerable = false;
 	AttackHitBoxLeft = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackHitBoxLeft"));
 	AttackHitBoxLeft->SetupAttachment(GetMesh(), TEXT("HitboxSocketLeft"));
@@ -41,13 +43,16 @@ void AEnemyBase::Tick(float DeltaTime)
 }
 
 
-void AEnemyBase::ApplyDamage(const float DamageAmount)
+void AEnemyBase::ApplyDamage(float DamageAmount)
 {
+	DamageAmount = (bIsStunning)? DamageAmount * 1.5 : DamageAmount;
 	CurrentHealth = FMath::Clamp(CurrentHealth - DamageAmount, 0.0f, MaxHealth);
+	CurrentDamage = DamageAmount;
+	GenerateDamageText();
 	if (CurrentHealth > 0) return;
 
+	// enemy is dead
 	if (AIController) AIController->StopMovement();
-
 	ChangeState(EnemyState::DEAD);
 	GetWorld()->GetTimerManager().SetTimer(DisposeTimer, this, &AEnemyBase::DisposeEnemy, 5.0f);
 		
@@ -66,8 +71,14 @@ void AEnemyBase::AttackHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedCompo
 			bCanDealDamage = false;
 			if (Target->CheckGuardSuccessful(this))
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Guard Success!"));
 				Target->GuardSuccessful();
+				if (GetCurrentMontage()) StopAnimMontage();
+				if (!CheckStun() && M_Choke)		
+				{
+					PlayAnimMontage(M_Choke);
+				}
+				else
+					ChangeState(EnemyState::STUN);
 			}
 			else 
 			{
@@ -79,6 +90,25 @@ void AEnemyBase::AttackHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedCompo
 		}
 	}
 }
+
+bool AEnemyBase::CheckStun()
+{
+	--CurrentStunCount;
+	UE_LOG(LogTemp, Warning, TEXT("StunC: %d"), CurrentStunCount);
+	if (CurrentStunCount <= 0)
+	{
+		CurrentStunCount = MaxStunCount;
+		return true;
+	}
+	return false;
+}
+
+void AEnemyBase::StunEnd()
+{
+	bIsStunning = false;
+	AttackEnd();
+}
+
 
 #pragma region StateMachine
 
@@ -154,7 +184,9 @@ void AEnemyBase::StateAttack()
 
 void AEnemyBase::StateStun()
 {
-	
+	if (bIsStunning) return;
+	bIsStunning = true;
+	GetWorldTimerManager().SetTimer(StunTimer, this, &AEnemyBase::StunEnd, StunTime);
 }
 
 void AEnemyBase::StateDead()

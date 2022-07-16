@@ -12,7 +12,6 @@ void UKomachiAnimNotify_Hurt::NotifyBegin(USkeletalMeshComponent* MeshComp, UAni
 		if (Player)
 		{
 			Player->bIsInvulnerable = true;
-			UE_LOG(LogTemp,Warning,TEXT("Start"));
 			Player->bCanMove = false;
 			Player->bCanDealDamage = false;
 			Player->bCanAttack = true;
