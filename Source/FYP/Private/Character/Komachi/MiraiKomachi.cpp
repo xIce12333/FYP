@@ -281,17 +281,19 @@ void AMiraiKomachi::WeaponHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedCo
 		if (Enemy)
 		{
 			bCanDealDamage = false;
-			Enemy->ApplyDamage(WeaponEquipped->DamageAmount);
+			const float MinDamage = WeaponEquipped->DamageAmount * 0.9;
+			const float MaxDamage = WeaponEquipped->DamageAmount * 1.1;
+			Enemy->ApplyDamage(static_cast<int>(FMath::RandRange(MinDamage, MaxDamage)));
 		}
 	}
 }
 
 void AMiraiKomachi::ApplyDamage(float DamageAmount)
 {
-	if (bIsDead || bIsInvulnerable) return;
-	CurrentHealth = FMath::Clamp(CurrentHealth - DamageAmount, 0.0f, MaxHealth);
-	if (bIsRolling) return;
+	if (bIsDead || bIsInvulnerable || bIsRolling) return;
 	bCanMove = false;
+	CurrentHealth = FMath::Clamp(CurrentHealth - DamageAmount, 0.0f, MaxHealth);
+	GenerateDamageText(DamageAmount);
 	if (CurrentHealth <= 0)
 	{
 		bIsDead = true;

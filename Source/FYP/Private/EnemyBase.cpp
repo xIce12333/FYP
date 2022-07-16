@@ -71,7 +71,9 @@ void AEnemyBase::AttackHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedCompo
 			}
 			else 
 			{
-				Target->ApplyDamage(Damage);
+				float MinDamage = Damage * 0.9;
+				float MaxDamage = Damage * 1.1;
+				Target->ApplyDamage(static_cast<int>(FMath::RandRange(MinDamage, MaxDamage)));
 			}
 
 		}
