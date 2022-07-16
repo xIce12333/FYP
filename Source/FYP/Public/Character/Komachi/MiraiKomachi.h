@@ -45,6 +45,7 @@ public:
 		bool bGuardSE;
 	UPROPERTY(BlueprintReadOnly)
 		bool bGuardSW;
+	bool bIsInvulnerable;
 	
 	UPROPERTY(BlueprintReadOnly)
 		float RunSpeed = 700;

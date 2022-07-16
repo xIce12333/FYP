@@ -11,6 +11,7 @@ void UKomachiAnimNotify_Hurt::NotifyBegin(USkeletalMeshComponent* MeshComp, UAni
 		AMiraiKomachi* Player = Cast<AMiraiKomachi>(MeshComp->GetOwner());
 		if (Player)
 		{
+			Player->bIsInvulnerable = true;
 			UE_LOG(LogTemp,Warning,TEXT("Start"));
 			Player->bCanMove = false;
 			Player->bCanDealDamage = false;
@@ -31,6 +32,7 @@ void UKomachiAnimNotify_Hurt::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimS
 		{
 			Player->bCanMove = true;
 			Player->bCanGuard = true;
+			Player->bIsInvulnerable = false;
 		}
 	}
 }

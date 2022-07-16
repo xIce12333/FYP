@@ -32,8 +32,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 		bool bIsAttacking;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
-		float MaxHealth = 50;
-	float CurrentHealth;
+		float MaxHealth = 30;
+	UPROPERTY(BlueprintReadOnly)
+		float CurrentHealth;
 	
 public:	
 	// Called every frame

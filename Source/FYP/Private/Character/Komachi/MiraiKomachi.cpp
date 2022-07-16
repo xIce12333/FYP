@@ -16,6 +16,7 @@ AMiraiKomachi::AMiraiKomachi()
 	bIsRolling = false;
 	bIsGuarding = false;
 	bCanGuard = true;
+	bIsInvulnerable = false;
 	StopGuard();
 }
 
@@ -287,7 +288,7 @@ void AMiraiKomachi::WeaponHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedCo
 
 void AMiraiKomachi::ApplyDamage(float DamageAmount)
 {
-	if (bIsDead) return;
+	if (bIsDead || bIsInvulnerable) return;
 	CurrentHealth = FMath::Clamp(CurrentHealth - DamageAmount, 0.0f, MaxHealth);
 	if (bIsRolling) return;
 	bCanMove = false;
