@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "KomachiStateManager.h"
 #include "Weapon.h"
+#include "Containers/Array.h"
 #include "Components/InputComponent.h"
 #include "Character/BaseClass/EnemyBase.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -23,28 +24,17 @@ public:
 	AMiraiKomachi();
 	
 	
-	UPROPERTY(BlueprintReadOnly)
-		bool bCanAttack;
-	UPROPERTY(BlueprintReadOnly)
-		bool bIsRolling;
-	UPROPERTY(BlueprintReadOnly)
-		bool bIsGuarding;
-	UPROPERTY(BlueprintReadOnly)
-		bool bGuardPressed;
-	UPROPERTY(BlueprintReadOnly)
-		bool bCanGuard;
-	UPROPERTY(BlueprintReadOnly)
-		bool bGuardE;
-	UPROPERTY(BlueprintReadOnly)
-		bool bGuardW;
-	UPROPERTY(BlueprintReadOnly)
-		bool bGuardNE;
-	UPROPERTY(BlueprintReadOnly)
-		bool bGuardNW;
-	UPROPERTY(BlueprintReadOnly)
-		bool bGuardSE;
-	UPROPERTY(BlueprintReadOnly)
-		bool bGuardSW;
+	bool bCanAttack;
+	bool bIsRolling;
+	bool bIsGuarding;
+	bool bGuardPressed;
+	bool bCanGuard;
+	bool bGuardE;
+	bool bGuardW;
+	bool bGuardNE;
+	bool bGuardNW;
+	bool bGuardSE;
+	bool bGuardSW;
 	bool bCanRoll;
 	bool bIsInvulnerable;
 	
@@ -63,9 +53,19 @@ public:
 
 	bool CheckGuardSuccessful(const AEnemyBase* Enemy) const;
 	void GuardSuccessful();
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSet<UAnimMontage*> M_Attack;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UAnimMontage* M_MeleeE;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UAnimMontage* M_MeleeW;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UAnimMontage* M_MeleeSE;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UAnimMontage* M_MeleeSW;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UAnimMontage* M_MeleeNE;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UAnimMontage* M_MeleeNW;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = Animations)
 		UAnimMontage* M_Roll;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = Animations)
@@ -95,8 +95,14 @@ public:
 		, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 		bool bFromSweep, const FHitResult& SweepResult);
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+		class USphereComponent* EnemyDetectionCollider;
 	void ApplyDamage(float DamageAmount);
 	void StopGuard();
+	UPROPERTY(BlueprintReadOnly)
+		AActor* TargetEnemy;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float TargetLockDistance = 800.0f;
 private:
 	void MoveForward(const float Axis);
 	void MoveRight(const float Axis);
@@ -108,7 +114,6 @@ private:
 	UFUNCTION(BlueprintCallable)
 		void ToggleStrafe();
 	void ToggleGuard();
-	
 	void Roll();
 	void MeleeN();
 	void MeleeE();
@@ -118,4 +123,21 @@ private:
 	void MeleeNW();
 	void MeleeSE();
 	void MeleeSW();
+	AActor* FindNearestEnemy();
+	void CycleLeft();
+	void CycleRight();
+	AActor* CycleEnemy(bool bLeft = true);
+
+	UFUNCTION()
+	void OnEnemyDetectionBeginOverlap(UPrimitiveComponent* OverlappedComp,
+		AActor* OtherActor, UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+		void OnEnemyDetectionEndOverlap(class UPrimitiveComponent*
+			OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+			int32 OtherBodyIndex);
+	TArray<class AActor*> NearbyEnemies;
+	
 };
+

@@ -19,6 +19,12 @@ AMiraiKomachi::AMiraiKomachi()
 	bIsInvulnerable = false;
 	bCanRoll = true;
 	StopGuard();
+	EnemyDetectionCollider = CreateDefaultSubobject<USphereComponent>(TEXT("Enemy Detection Collider"));
+	EnemyDetectionCollider->SetupAttachment(RootComponent);
+	EnemyDetectionCollider->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	EnemyDetectionCollider->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn,
+		ECollisionResponse::ECR_Overlap);
+	EnemyDetectionCollider->SetSphereRadius(TargetLockDistance);
 }
 
 // Called when the game starts or when spawned
@@ -26,7 +32,8 @@ void AMiraiKomachi::BeginPlay()
 {
 	Super::BeginPlay();
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
-	
+	EnemyDetectionCollider->OnComponentBeginOverlap.AddDynamic(this, &AMiraiKomachi::OnEnemyDetectionBeginOverlap);
+	EnemyDetectionCollider->OnComponentEndOverlap.AddDynamic(this, &AMiraiKomachi::OnEnemyDetectionEndOverlap);
 }
 
 // Called every frame
@@ -55,16 +62,18 @@ void AMiraiKomachi::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction("Roll", IE_Pressed, this, &AMiraiKomachi::Roll);
 	PlayerInputComponent->BindAction("Guard", IE_Pressed, this, &AMiraiKomachi::ToggleGuard);
 	PlayerInputComponent->BindAction("Guard", IE_Released, this, &AMiraiKomachi::ToggleGuard);
-	
+	PlayerInputComponent->BindAction("Strafe", IE_Pressed, this, &AMiraiKomachi::ToggleStrafe);
+	PlayerInputComponent->BindAction("CycleLeft", IE_Pressed, this, &AMiraiKomachi::CycleLeft);
+	PlayerInputComponent->BindAction("CycleRight", IE_Pressed, this, &AMiraiKomachi::CycleRight);
 }
 
 
 void AMiraiKomachi::MoveForward(const float Axis)		
 {
 	if(!bCanMove) return;
-	FRotator Rotation = Controller->GetControlRotation();
-	FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
-	FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	const FRotator Rotation = Controller->GetControlRotation();
+	const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
+	const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 	AddMovementInput(Direction, Axis);
 	
 }
@@ -72,35 +81,83 @@ void AMiraiKomachi::MoveForward(const float Axis)
 void AMiraiKomachi::MoveRight(const float Axis)
 {
 	if(!bCanMove) return;
-	FRotator Rotation = Controller->GetControlRotation();
-	FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
-	FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+	const FRotator Rotation = Controller->GetControlRotation();
+	const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
+	const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 	AddMovementInput(Direction, Axis);
 }
 
 void AMiraiKomachi::ToRunSpeed()
 {
-	if(!bCanMove) return;
-	if (!bTargetLocked)
-		GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
+	if(!bCanMove || bTargetLocked) return;
+	GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
 }
 
 void AMiraiKomachi::ToWalkSpeed()
 {
-	if(!bCanMove) return;
-	if (!bTargetLocked)
-		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+	if(!bCanMove || bTargetLocked) return;
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
 
 
 void AMiraiKomachi::ToggleStrafe()
 {
-	GetCharacterMovement()->MaxWalkSpeed = StrafeSpeed;
+	if (NearbyEnemies.Num() == 0)
+	{
+		TargetEnemy = nullptr;
+		bTargetLocked = false;
+		bUseControllerRotationYaw = false;
+		return;
+	}
+	
 	bTargetLocked = !bTargetLocked;
 	bUseControllerRotationYaw = !bUseControllerRotationYaw;
-	if (!bTargetLocked)
+	if (bTargetLocked)
+	{
+		TargetEnemy = FindNearestEnemy();
+		GetCharacterMovement()->MaxWalkSpeed = StrafeSpeed;
+	}
+	else
+	{
 		ToWalkSpeed();
+	}
+	
 }
+
+AActor* AMiraiKomachi::FindNearestEnemy()
+{
+	AActor* SuitableTarget = nullptr;
+	float NearestDistance = INFINITY;
+	for(const auto& NearEnemy : NearbyEnemies)
+	{
+		const float Distance = FVector::Dist(GetActorLocation(), NearEnemy->GetActorLocation());
+		if (Distance < NearestDistance)
+		{
+			NearestDistance = Distance;
+			SuitableTarget = NearEnemy;
+		}
+	}
+	return SuitableTarget;
+}
+
+void AMiraiKomachi::CycleLeft()
+{
+	if (!bTargetLocked) return;
+	CycleEnemy(true);
+}
+
+void AMiraiKomachi::CycleRight()
+{
+	if (!bTargetLocked) return;
+	CycleEnemy(false);
+}
+
+AActor* AMiraiKomachi::CycleEnemy(bool bLeft)
+{
+	if (NearbyEnemies.Num() == 0) return nullptr;
+	
+}
+
 
 void AMiraiKomachi::ToggleGuard()
 {
@@ -155,14 +212,10 @@ void AMiraiKomachi::MeleeE()
 	{
 		bGuardE = true;
 		PlayAnimMontage(M_Guard);
-		return;
 	}
-	if (!bCanAttack) return;
-	for (auto It = M_Attack.CreateConstIterator(); It; ++It)
+	else if (bCanAttack && M_MeleeE)
 	{
-		int Id = It.GetId().AsInteger();
-		if (Id == 0)
-			PlayAnimMontage(*It);
+		PlayAnimMontage(M_MeleeE);
 	}
 }
 
@@ -179,15 +232,12 @@ void AMiraiKomachi::MeleeW()
 	{
 		bGuardW = true;
 		PlayAnimMontage(M_Guard);
-		return;
 	}
-	if (!bCanAttack) return;
-	for (auto It = M_Attack.CreateConstIterator(); It; ++It)
+	else if (bCanAttack && M_MeleeW)
 	{
-		int Id = It.GetId().AsInteger();
-		if (Id == 5)
-			PlayAnimMontage(*It);
+		PlayAnimMontage(M_MeleeW);
 	}
+
 }
 
 void AMiraiKomachi::MeleeNE()
@@ -198,15 +248,12 @@ void AMiraiKomachi::MeleeNE()
 	{
 		bGuardNE = true;
 		PlayAnimMontage(M_Guard);
-		return;
 	}
-	if (!bCanAttack) return;
-	for (auto It = M_Attack.CreateConstIterator(); It; ++It)
+	else if (bCanAttack && M_MeleeNE)
 	{
-		int Id = It.GetId().AsInteger();
-		if (Id == 1)
-			PlayAnimMontage(*It);
+		PlayAnimMontage(M_MeleeNE);
 	}
+
 }
 
 void AMiraiKomachi::MeleeNW()
@@ -217,14 +264,10 @@ void AMiraiKomachi::MeleeNW()
 	{
 		bGuardNW = true;
 		PlayAnimMontage(M_Guard);
-		return;
 	}
-	if (!bCanAttack) return;
-	for (auto It = M_Attack.CreateConstIterator(); It; ++It)
+	else if (bCanAttack && M_MeleeNW)
 	{
-		int Id = It.GetId().AsInteger();
-		if (Id == 2)
-			PlayAnimMontage(*It);
+		PlayAnimMontage(M_MeleeNW);
 	}
 }
 
@@ -236,15 +279,12 @@ void AMiraiKomachi::MeleeSE()
 	{
 		bGuardSE = true;
 		PlayAnimMontage(M_Guard);
-		return;
 	}
-	if (!bCanAttack) return;
-	for (auto It = M_Attack.CreateConstIterator(); It; ++It)
+	else if (bCanAttack && M_MeleeSE)
 	{
-		int Id = It.GetId().AsInteger();
-		if (Id == 3)
-			PlayAnimMontage(*It);
+		PlayAnimMontage(M_MeleeSE);
 	}
+
 }
 
 void AMiraiKomachi::MeleeSW()
@@ -255,15 +295,33 @@ void AMiraiKomachi::MeleeSW()
 	{
 		bGuardSW = true;
 		PlayAnimMontage(M_Guard);
-		return;
 	}
-	if (!bCanAttack) return;
-	for (auto It = M_Attack.CreateConstIterator(); It; ++It)
+	else if (bCanAttack && M_MeleeSW)
 	{
-		int Id = It.GetId().AsInteger();
-		if (Id == 4)
-			PlayAnimMontage(*It);
+		PlayAnimMontage(M_MeleeSW);
 	}
+}
+
+void AMiraiKomachi::OnEnemyDetectionBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+                                                 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (Cast<AEnemyBase>(OtherActor) && !NearbyEnemies.Contains(OtherActor))
+	{
+		NearbyEnemies.Add(OtherActor);
+	}
+		
+}
+
+void AMiraiKomachi::OnEnemyDetectionEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (Cast<AEnemyBase>(OtherActor) && NearbyEnemies.Contains(OtherActor))
+	{
+		NearbyEnemies.Remove(OtherActor);
+		if (NearbyEnemies.Num() == 0)
+			ToggleStrafe();
+	}
+	
 }
 
 #pragma endregion Attack

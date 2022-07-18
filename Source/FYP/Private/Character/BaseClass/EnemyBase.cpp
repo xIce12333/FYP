@@ -149,14 +149,14 @@ void AEnemyBase::StateIdle()
 {
 	if (!Player) return;
 	const float PlayerDistance = FindPlayerDistance();
-	if (PlayerDistance < AttackRange)
+/*	if (PlayerDistance < AttackRange)
 	{
 		ChangeState(EnemyState::ATTACK);
 	}
 	else if (PlayerDistance < ChaseRange)
 	{
 		ChangeState(EnemyState::CHASE);
-	}
+	} */
 		
 }
 
