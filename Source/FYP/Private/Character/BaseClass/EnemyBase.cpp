@@ -197,6 +197,7 @@ void AEnemyBase::StateDead()
 	if (GetCurrentMontage()) StopAnimMontage();
 	bIsDead = true;
 	bCanDealDamage = false;
+	
 }
 
 #pragma endregion StateMachine

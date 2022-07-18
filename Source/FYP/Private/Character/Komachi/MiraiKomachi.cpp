@@ -109,7 +109,6 @@ void AMiraiKomachi::ToggleStrafe()
 		bUseControllerRotationYaw = false;
 		return;
 	}
-	
 	bTargetLocked = !bTargetLocked;
 	bUseControllerRotationYaw = !bUseControllerRotationYaw;
 	if (bTargetLocked)
@@ -143,19 +142,48 @@ AActor* AMiraiKomachi::FindNearestEnemy()
 void AMiraiKomachi::CycleLeft()
 {
 	if (!bTargetLocked) return;
-	CycleEnemy(true);
+	CycleEnemy(false);
 }
 
 void AMiraiKomachi::CycleRight()
 {
 	if (!bTargetLocked) return;
-	CycleEnemy(false);
+	CycleEnemy(true);
 }
 
-AActor* AMiraiKomachi::CycleEnemy(bool bLeft)
+void AMiraiKomachi::CycleEnemy(bool bRight)
 {
-	if (NearbyEnemies.Num() == 0) return nullptr;
+	if (!TargetEnemy) return;
 	
+	AActor* SuitableTarget = nullptr;
+	const FVector CameraLocation = Cast<APlayerController>(GetController())->PlayerCameraManager->GetCameraLocation();
+
+	const FRotator TargetDirection = (TargetEnemy->GetActorLocation() - CameraLocation).ToOrientationRotator();
+
+	float BestYawDifference = INFINITY;
+
+	for (const auto& NearEnemy : NearbyEnemies)
+	{
+		if (NearEnemy == TargetEnemy)
+			continue;
+
+		FVector NearEnemyDirection = NearEnemy->GetActorLocation() - CameraLocation;
+		const FRotator Difference = UKismetMathLibrary::NormalizedDeltaRotator(NearEnemyDirection.ToOrientationRotator(), TargetDirection);
+
+		if ((bRight && Difference.Yaw <= 0.0f) || (!bRight && Difference.Yaw >= 0.0f))
+			continue;
+		
+		const float YawDifference = FMath::Abs(Difference.Yaw);
+		if (YawDifference < BestYawDifference)
+		{
+			BestYawDifference = YawDifference;
+			SuitableTarget = NearEnemy;
+		}
+	}
+
+	if (!SuitableTarget) return;
+	TargetEnemy = SuitableTarget;
+
 }
 
 
@@ -307,6 +335,7 @@ void AMiraiKomachi::OnEnemyDetectionBeginOverlap(UPrimitiveComponent* Overlapped
 {
 	if (Cast<AEnemyBase>(OtherActor) && !NearbyEnemies.Contains(OtherActor))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Enter: %s"), *OtherActor->GetName());
 		NearbyEnemies.Add(OtherActor);
 	}
 		
@@ -317,6 +346,7 @@ void AMiraiKomachi::OnEnemyDetectionEndOverlap(UPrimitiveComponent* OverlappedCo
 {
 	if (Cast<AEnemyBase>(OtherActor) && NearbyEnemies.Contains(OtherActor))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Exit: %s"), *OtherActor->GetName());
 		NearbyEnemies.Remove(OtherActor);
 		if (NearbyEnemies.Num() == 0)
 			ToggleStrafe();

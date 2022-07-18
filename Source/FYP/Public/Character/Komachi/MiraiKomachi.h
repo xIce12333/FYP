@@ -103,6 +103,8 @@ public:
 		AActor* TargetEnemy;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float TargetLockDistance = 800.0f;
+
+	TArray<class AActor*> NearbyEnemies;
 private:
 	void MoveForward(const float Axis);
 	void MoveRight(const float Axis);
@@ -126,7 +128,7 @@ private:
 	AActor* FindNearestEnemy();
 	void CycleLeft();
 	void CycleRight();
-	AActor* CycleEnemy(bool bLeft = true);
+	void CycleEnemy(bool bLeft = true);
 
 	UFUNCTION()
 	void OnEnemyDetectionBeginOverlap(UPrimitiveComponent* OverlappedComp,
@@ -137,7 +139,7 @@ private:
 		void OnEnemyDetectionEndOverlap(class UPrimitiveComponent*
 			OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 			int32 OtherBodyIndex);
-	TArray<class AActor*> NearbyEnemies;
+
 	
 };
 
