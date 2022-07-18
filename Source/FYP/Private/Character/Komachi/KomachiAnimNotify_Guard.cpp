@@ -10,8 +10,6 @@ void UKomachiAnimNotify_Guard::NotifyBegin(USkeletalMeshComponent* MeshComp, UAn
 	{
 		AMiraiKomachi* Player = Cast<AMiraiKomachi>(MeshComp->GetOwner());
 		if (!Player) return;
-
-		Player->bCanGuard = false;
 		Player->bCanMove = false;
 		Player->bCanAttack = false;
 		Player->bIsGuarding = true;
@@ -38,8 +36,9 @@ void UKomachiAnimNotify_Guard::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnim
 	{
 		AMiraiKomachi* Player = Cast<AMiraiKomachi>(MeshComp->GetOwner());
 		if (!Player) return;
-		Player->bCanGuard = true;
-		UE_LOG(LogTemp,Warning,TEXT("Stop"));
+		Player->bIsGuarding = false;
+		Player->bCanMove = true;
+		Player->bCanAttack = true;
 		Player->StopGuard();
 	}
 }

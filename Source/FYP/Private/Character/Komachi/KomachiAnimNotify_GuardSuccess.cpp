@@ -14,8 +14,6 @@ void UKomachiAnimNotify_GuardSuccess::NotifyBegin(USkeletalMeshComponent* MeshCo
 		if (Player)
 		{
 			Player->bCanMove = false;
-			Player->bCanDealDamage = false;
-			Player->bCanAttack = true;
 			const FVector BackwardDir = -Player->GetActorRotation().Vector();
 			Player->LaunchCharacter(BackwardDir * Player->KnockBackSpeed, true, true);
 		}
@@ -30,7 +28,6 @@ void UKomachiAnimNotify_GuardSuccess::NotifyEnd(USkeletalMeshComponent* MeshComp
 		if (Player)
 		{
 			Player->bCanMove = true;
-			Player->bCanGuard = true;
 		}
 	}
 }

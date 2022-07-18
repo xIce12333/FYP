@@ -4,7 +4,7 @@
 #include "Character/Komachi/KomachiAnimNotify_Roll.h"
 #include "Kismet/GameplayStatics.h"
 
-void UKomachiAnimNotify_Roll::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
+/*void UKomachiAnimNotify_Roll::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
 	if (MeshComp && MeshComp->GetOwner())
 	{
@@ -17,6 +17,39 @@ void UKomachiAnimNotify_Roll::Notify(USkeletalMeshComponent* MeshComp, UAnimSequ
 				HandleBeginRolling(Player);
 			else    // finish rolling
 				HandleFinishRolling(Player);
+		}
+	} 
+} */
+
+void UKomachiAnimNotify_Roll::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
+	float TotalDuration)
+{
+	if (MeshComp && MeshComp->GetOwner())
+	{
+		AMiraiKomachi* Player = Cast<AMiraiKomachi>(MeshComp->GetOwner());
+		if (Player)
+		{
+			Player->bCanMove = false;
+			Player->bCanAttack = false;
+			Player->bIsInvulnerable = true;
+			Player->bCanRoll = false;
+			HandleBeginRolling(Player);
+		}
+	} 
+}
+
+void UKomachiAnimNotify_Roll::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
+{
+	if (MeshComp && MeshComp->GetOwner())
+	{
+		AMiraiKomachi* Player = Cast<AMiraiKomachi>(MeshComp->GetOwner());
+		if (Player)
+		{
+			Player->bCanMove = true;
+			Player->bCanAttack = true;
+			Player->bIsInvulnerable = false;
+			Player->bCanRoll =  true;
+			HandleFinishRolling(Player);
 		}
 	} 
 }

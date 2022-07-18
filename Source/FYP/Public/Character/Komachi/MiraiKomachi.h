@@ -45,6 +45,7 @@ public:
 		bool bGuardSE;
 	UPROPERTY(BlueprintReadOnly)
 		bool bGuardSW;
+	bool bCanRoll;
 	bool bIsInvulnerable;
 	
 	UPROPERTY(BlueprintReadOnly)

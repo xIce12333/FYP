@@ -17,6 +17,7 @@ AMiraiKomachi::AMiraiKomachi()
 	bIsGuarding = false;
 	bCanGuard = true;
 	bIsInvulnerable = false;
+	bCanRoll = true;
 	StopGuard();
 }
 
@@ -96,7 +97,6 @@ void AMiraiKomachi::ToggleStrafe()
 {
 	GetCharacterMovement()->MaxWalkSpeed = StrafeSpeed;
 	bTargetLocked = !bTargetLocked;
-	if(!bCanMove) return;
 	bUseControllerRotationYaw = !bUseControllerRotationYaw;
 	if (!bTargetLocked)
 		ToWalkSpeed();
@@ -109,7 +109,7 @@ void AMiraiKomachi::ToggleGuard()
 
 void AMiraiKomachi::Roll()
 {
-	if(!bCanMove) return;
+	if(!bCanRoll) return;
 	PlayAnimMontage(M_Roll, 1.5);
 }
 
@@ -118,7 +118,7 @@ void AMiraiKomachi::Roll()
 #pragma region Attack
 void AMiraiKomachi::Attack(FVector StickValue)
 {
-	if (!bCanAttack || !WeaponEquipped || !bCanGuard ||StickValue.Size() < 0.5) return;
+	if (!bCanAttack || !WeaponEquipped ||StickValue.Size() < 0.5) return;
 	StickValue = StickValue.GetSafeNormal(); // Normalize magnitude to 1
 	StickValue.Y = -StickValue.Y;		// original y-axis is -1 when pointing upward 
 	float Angle = UKismetMathLibrary::Acos(FVector::DotProduct(StickValue, FVector(1, 0, 0)));
@@ -153,9 +153,11 @@ void AMiraiKomachi::MeleeE()
 
 	if (bGuardPressed && M_Guard)
 	{
+		bGuardE = true;
 		PlayAnimMontage(M_Guard);
 		return;
 	}
+	if (!bCanAttack) return;
 	for (auto It = M_Attack.CreateConstIterator(); It; ++It)
 	{
 		int Id = It.GetId().AsInteger();
@@ -179,6 +181,7 @@ void AMiraiKomachi::MeleeW()
 		PlayAnimMontage(M_Guard);
 		return;
 	}
+	if (!bCanAttack) return;
 	for (auto It = M_Attack.CreateConstIterator(); It; ++It)
 	{
 		int Id = It.GetId().AsInteger();
@@ -197,6 +200,7 @@ void AMiraiKomachi::MeleeNE()
 		PlayAnimMontage(M_Guard);
 		return;
 	}
+	if (!bCanAttack) return;
 	for (auto It = M_Attack.CreateConstIterator(); It; ++It)
 	{
 		int Id = It.GetId().AsInteger();
@@ -215,6 +219,7 @@ void AMiraiKomachi::MeleeNW()
 		PlayAnimMontage(M_Guard);
 		return;
 	}
+	if (!bCanAttack) return;
 	for (auto It = M_Attack.CreateConstIterator(); It; ++It)
 	{
 		int Id = It.GetId().AsInteger();
@@ -233,6 +238,7 @@ void AMiraiKomachi::MeleeSE()
 		PlayAnimMontage(M_Guard);
 		return;
 	}
+	if (!bCanAttack) return;
 	for (auto It = M_Attack.CreateConstIterator(); It; ++It)
 	{
 		int Id = It.GetId().AsInteger();
@@ -251,6 +257,7 @@ void AMiraiKomachi::MeleeSW()
 		PlayAnimMontage(M_Guard);
 		return;
 	}
+	if (!bCanAttack) return;
 	for (auto It = M_Attack.CreateConstIterator(); It; ++It)
 	{
 		int Id = It.GetId().AsInteger();
@@ -290,7 +297,7 @@ void AMiraiKomachi::WeaponHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedCo
 
 void AMiraiKomachi::ApplyDamage(float DamageAmount)
 {
-	if (bIsDead || bIsInvulnerable || bIsRolling) return;
+	if (bIsDead || bIsInvulnerable) return;
 	bCanMove = false;
 	CurrentHealth = FMath::Clamp(CurrentHealth - DamageAmount, 0.0f, MaxHealth);
 	CurrentDamage = DamageAmount;
@@ -299,7 +306,8 @@ void AMiraiKomachi::ApplyDamage(float DamageAmount)
 	{
 		bIsDead = true;
 		if (GetCurrentMontage()) StopAnimMontage();
-		bCanMove = false;
+		APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+		this->DisableInput(PlayerController);
 	}
 	else
 	{
@@ -311,10 +319,6 @@ void AMiraiKomachi::ApplyDamage(float DamageAmount)
 
 void AMiraiKomachi::StopGuard()
 {
-	if (!bIsDead)
-		bCanMove = true;
-	bCanAttack = true;
-	bIsGuarding = false;
 	bGuardE = false;
 	bGuardW = false;
 	bGuardNE = false;
