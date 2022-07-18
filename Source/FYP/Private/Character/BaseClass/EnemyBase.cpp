@@ -29,8 +29,8 @@ void AEnemyBase::BeginPlay()
 	Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	AIController = Cast<AAIController>(GetController());
 
-	AttackHitBoxLeft->OnComponentBeginOverlap.AddDynamic(this, &AEnemyBase::AttackHitBoxOnBeginOverlap);
-	AttackHitBoxRight->OnComponentBeginOverlap.AddDynamic(this, &AEnemyBase::AttackHitBoxOnBeginOverlap);
+//	AttackHitBoxLeft->OnComponentBeginOverlap.AddDynamic(this, &AEnemyBase::AttackHitBoxOnBeginOverlap);
+//	AttackHitBoxRight->OnComponentBeginOverlap.AddDynamic(this, &AEnemyBase::AttackHitBoxOnBeginOverlap);
 }
 
 
@@ -82,8 +82,8 @@ void AEnemyBase::AttackHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedCompo
 			}
 			else 
 			{
-				float MinDamage = Damage * 0.9;
-				float MaxDamage = Damage * 1.1;
+				const float MinDamage = Damage * 0.9;
+				const float MaxDamage = Damage * 1.1;
 				Target->ApplyDamage(static_cast<int>(FMath::RandRange(MinDamage, MaxDamage)));
 			}
 
@@ -179,6 +179,9 @@ void AEnemyBase::StateAttack()
 	bIsAttacking = true;
 	FacePlayer();
 	const float StartAttackDelay = FMath::RandRange(StartAttackDelayMin, StartAttackDelayMax);
+	RandomAttack =  FMath::RandRange(0, M_Attack.Num() - 1);
+	AttackHitBoxLeft->OnComponentBeginOverlap.AddDynamic(this, &AEnemyBase::AttackHitBoxOnBeginOverlap);
+	AttackHitBoxRight->OnComponentBeginOverlap.AddDynamic(this, &AEnemyBase::AttackHitBoxOnBeginOverlap);
 	GetWorldTimerManager().SetTimer(AttackTimer, this, &AEnemyBase::Attack, StartAttackDelay);
 }
 
@@ -203,7 +206,6 @@ void AEnemyBase::Attack()
 	bCanDealDamage = true;
 	if (AIController)
 		AIController->StopMovement();
-	const int RandomAttack = FMath::RandRange(0, M_Attack.Num() - 1);
 	switch (RandomAttack)
 	{
 	case 0:

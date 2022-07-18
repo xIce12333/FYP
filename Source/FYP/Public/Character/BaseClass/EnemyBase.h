@@ -53,12 +53,19 @@ public:
 	
 	UPROPERTY(BlueprintReadOnly)
 		bool bIsStunning;
+
+		
+	UFUNCTION()
+		virtual void AttackHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor
+			, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+			bool bFromSweep, const FHitResult& SweepResult);
 	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
 	bool bIsInvulnerable;
+	int RandomAttack;
 	
 	// if player enters this range, enemy will start chasing the player
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")	
@@ -83,12 +90,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
 		float Damage = 10.0f;
 	AAIController* AIController;
-
-	
-	UFUNCTION()
-		virtual void AttackHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor
-			, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
-			bool bFromSweep, const FHitResult& SweepResult);
 	
 	FTimerHandle AttackTimer;
 	FTimerHandle DisposeTimer;

@@ -31,3 +31,19 @@ void ASkeletonController::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 }
 
+void ASkeletonController::Attack()
+{
+	switch (RandomAttack)
+	{
+		// left hand attack
+		case 0:
+		case 1:
+		case 3:
+			AttackHitBoxRight->OnComponentBeginOverlap.RemoveDynamic(this, &AEnemyBase::AttackHitBoxOnBeginOverlap);
+			break;
+		default:		// right hand attack
+			AttackHitBoxLeft->OnComponentBeginOverlap.RemoveDynamic(this, &AEnemyBase::AttackHitBoxOnBeginOverlap);
+	}
+	Super::Attack();
+}
+
