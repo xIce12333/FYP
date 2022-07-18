@@ -55,8 +55,6 @@ void AEnemyBase::ApplyDamage(float DamageAmount)
 	if (AIController) AIController->StopMovement();
 	ChangeState(EnemyState::DEAD);
 	GetWorld()->GetTimerManager().SetTimer(DisposeTimer, this, &AEnemyBase::DisposeEnemy, 5.0f);
-		
-	
 	
 }
 
@@ -149,14 +147,14 @@ void AEnemyBase::StateIdle()
 {
 	if (!Player) return;
 	const float PlayerDistance = FindPlayerDistance();
-/*	if (PlayerDistance < AttackRange)
+	if (PlayerDistance < AttackRange)
 	{
 		ChangeState(EnemyState::ATTACK);
 	}
 	else if (PlayerDistance < ChaseRange)
 	{
 		ChangeState(EnemyState::CHASE);
-	} */
+	} 
 		
 }
 
@@ -197,7 +195,13 @@ void AEnemyBase::StateDead()
 	if (GetCurrentMontage()) StopAnimMontage();
 	bIsDead = true;
 	bCanDealDamage = false;
-	
+	AMiraiKomachi* Komachi = Cast<AMiraiKomachi>(Player);
+	if (Komachi)
+	{
+		Komachi->NearbyEnemies.Remove(this);
+		Komachi->ToggleStrafe();
+		Komachi->ToggleStrafe();
+	}
 }
 
 #pragma endregion StateMachine

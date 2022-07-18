@@ -102,6 +102,7 @@ void AMiraiKomachi::ToWalkSpeed()
 
 void AMiraiKomachi::ToggleStrafe()
 {
+	if (!WeaponEquipped) return;
 	if (NearbyEnemies.Num() == 0)
 	{
 		TargetEnemy = nullptr;

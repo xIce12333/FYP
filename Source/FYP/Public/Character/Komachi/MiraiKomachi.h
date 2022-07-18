@@ -104,6 +104,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float TargetLockDistance = 800.0f;
 
+	UFUNCTION(BlueprintCallable)
+		void ToggleStrafe();
 	TArray<class AActor*> NearbyEnemies;
 private:
 	void MoveForward(const float Axis);
@@ -113,8 +115,6 @@ private:
 	
 	void ToRunSpeed();
 	void ToWalkSpeed();
-	UFUNCTION(BlueprintCallable)
-		void ToggleStrafe();
 	void ToggleGuard();
 	void Roll();
 	void MeleeN();
