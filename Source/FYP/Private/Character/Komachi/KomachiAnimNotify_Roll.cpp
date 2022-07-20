@@ -54,7 +54,13 @@ void UKomachiAnimNotify_Roll::HandleBeginRolling(AMiraiKomachi* Player)
 	Player->GetCharacterMovement()->MaxWalkSpeed = Player->RollSpeed;
 	float x, y;
 	Player->GetWorld()->GetFirstPlayerController()->GetInputAnalogStickState(EControllerAnalogStick::CAS_LeftStick, y, x);
-	
+	const FVector2D Value(x, y);
+	if (Value.Size() < 0.01)
+	{
+		RollDirection = Player->bTargetLocked? -Player->GetActorForwardVector(): Player->GetActorForwardVector();
+		Player->SetActorRotation(RollDirection.Rotation());
+		return;
+	}
 	const float ResultingYaw = FVector(x, y, 0).Rotation().Yaw + Player->GetWorld()->GetFirstPlayerController()->PlayerCameraManager->GetCameraRotation().Yaw;
 	const FRotator Direction = FRotator(0, ResultingYaw, 0);
 	Player->bIsRolling = true;
