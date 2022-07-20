@@ -78,7 +78,6 @@ void AEnemyBase::AttackHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedCompo
 			{
 				const float MinDamage = Damage * 0.9;
 				const float MaxDamage = Damage * 1.1;
-				UE_LOG(LogTemp, Warning, TEXT("%s"), *OverlappedComponent->GetName());
 				Target->ApplyDamage(static_cast<int>(FMath::RandRange(MinDamage, MaxDamage)));
 			}
 

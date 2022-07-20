@@ -438,6 +438,7 @@ bool AMiraiKomachi::CheckGuardSuccessful(const AEnemyBase* Enemy) const
 
 void AMiraiKomachi::GuardSuccessful()
 {
-	if (M_GuardSuccessful)
-		PlayAnimMontage(M_GuardSuccessful);
+	if (!M_GuardSuccessful) return;
+	CameraShake();
+	PlayAnimMontage(M_GuardSuccessful);
 }

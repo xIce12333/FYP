@@ -51,6 +51,8 @@ public:
 
 	bool CheckGuardSuccessful(const AEnemyBase* Enemy) const;
 	void GuardSuccessful();
+	UFUNCTION(BlueprintImplementableEvent)
+		void CameraShake();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UAnimMontage* M_MeleeE;
