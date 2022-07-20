@@ -16,7 +16,7 @@ public:
 	AFloatingTextActor();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "FloatingText")
-		void InitializeText(const FText& Damagetext);
+		void InitializeText(const FText& Damagetext, bool bIsPlayer);
 
 protected:
 	// Called when the game starts or when spawned

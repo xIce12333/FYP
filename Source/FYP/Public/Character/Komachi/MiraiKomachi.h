@@ -48,8 +48,6 @@ public:
 		float MeleeAttackSpeed = 800;
 	UPROPERTY(BlueprintReadOnly)
 		float KnockBackSpeed = 800;
-	UPROPERTY(BlueprintReadOnly)
-		FVector RollVec;
 
 	bool CheckGuardSuccessful(const AEnemyBase* Enemy) const;
 	void GuardSuccessful();
@@ -129,7 +127,9 @@ private:
 	void CycleLeft();
 	void CycleRight();
 	void CycleEnemy(bool bLeft = true);
-
+	void CameraRight(const float Axis);
+	void CameraUp(const float Axis);
+	
 	UFUNCTION()
 	void OnEnemyDetectionBeginOverlap(UPrimitiveComponent* OverlappedComp,
 		AActor* OtherActor, UPrimitiveComponent* OtherComp,

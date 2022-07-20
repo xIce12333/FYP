@@ -41,10 +41,6 @@ void AMiraiKomachi::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	if(bIsRolling)
-	{
-		GetCharacterMovement()->Velocity = RollVec * 600;
-	}
 }
 
 #pragma region Input_and_Movement
@@ -52,11 +48,11 @@ void AMiraiKomachi::Tick(float DeltaTime)
 void AMiraiKomachi::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis("CameraRight", this, &AMiraiKomachi::CameraRight);
+	PlayerInputComponent->BindAxis("CameraUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMiraiKomachi::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMiraiKomachi::MoveRight);
-
+	
 	PlayerInputComponent->BindAction("ChangeMoveSpeed", IE_Pressed, this, &AMiraiKomachi::ToRunSpeed);
 	PlayerInputComponent->BindAction("ChangeMoveSpeed", IE_Released, this, &AMiraiKomachi::ToWalkSpeed);
 	PlayerInputComponent->BindAction("Roll", IE_Pressed, this, &AMiraiKomachi::Roll);
@@ -185,6 +181,16 @@ void AMiraiKomachi::CycleEnemy(bool bRight)
 	if (!SuitableTarget) return;
 	TargetEnemy = SuitableTarget;
 
+}
+
+void AMiraiKomachi::CameraRight(const float Axis)
+{
+	if (bTargetLocked) return;
+	AddControllerYawInput(Axis);
+}
+
+void AMiraiKomachi::CameraUp(const float Axis)
+{
 }
 
 

@@ -4,23 +4,6 @@
 #include "Character/Komachi/KomachiAnimNotify_Roll.h"
 #include "Kismet/GameplayStatics.h"
 
-/*void UKomachiAnimNotify_Roll::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
-{
-	if (MeshComp && MeshComp->GetOwner())
-	{
-		AMiraiKomachi* Player = Cast<AMiraiKomachi>(MeshComp->GetOwner());
-		if (Player)
-		{
-			Player->bCanMove = !Player->bCanMove;
-			Player->bCanAttack = !Player->bCanAttack;
-			if (!Player->bCanMove)	// start rolling
-				HandleBeginRolling(Player);
-			else    // finish rolling
-				HandleFinishRolling(Player);
-		}
-	} 
-} */
-
 void UKomachiAnimNotify_Roll::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
 	float TotalDuration)
 {
@@ -35,6 +18,17 @@ void UKomachiAnimNotify_Roll::NotifyBegin(USkeletalMeshComponent* MeshComp, UAni
 			Player->bCanRoll = false;
 			HandleBeginRolling(Player);
 		}
+	} 
+}
+
+void UKomachiAnimNotify_Roll::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
+	float FrameDeltaTime)
+{
+	if (MeshComp && MeshComp->GetOwner())
+	{
+		AMiraiKomachi* Player = Cast<AMiraiKomachi>(MeshComp->GetOwner());
+		if (!Player) return;
+		Player->GetCharacterMovement()->Velocity = RollDirection * Player->RollSpeed;
 	} 
 }
 
@@ -64,7 +58,7 @@ void UKomachiAnimNotify_Roll::HandleBeginRolling(AMiraiKomachi* Player)
 	const float ResultingYaw = FVector(x, y, 0).Rotation().Yaw + Player->GetWorld()->GetFirstPlayerController()->PlayerCameraManager->GetCameraRotation().Yaw;
 	const FRotator Direction = FRotator(0, ResultingYaw, 0);
 	Player->bIsRolling = true;
-	Player->RollVec = Direction.Vector();
+	RollDirection = Direction.Vector();
 	Player->SetActorRotation(Direction);
 }
 
