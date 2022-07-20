@@ -40,7 +40,6 @@ void AMiraiKomachi::BeginPlay()
 void AMiraiKomachi::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
 }
 
 #pragma region Input_and_Movement
@@ -49,7 +48,7 @@ void AMiraiKomachi::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	PlayerInputComponent->BindAxis("CameraRight", this, &AMiraiKomachi::CameraRight);
-	PlayerInputComponent->BindAxis("CameraUp", this, &APawn::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis("CameraUp", this, &AMiraiKomachi::CameraUp);
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMiraiKomachi::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMiraiKomachi::MoveRight);
 	
@@ -186,11 +185,13 @@ void AMiraiKomachi::CycleEnemy(bool bRight)
 void AMiraiKomachi::CameraRight(const float Axis)
 {
 	if (bTargetLocked) return;
-	AddControllerYawInput(Axis);
+	AddControllerYawInput(Axis * 0.5);
 }
 
 void AMiraiKomachi::CameraUp(const float Axis)
 {
+	if (bTargetLocked) return;
+	AddControllerPitchInput(Axis * 0.5);
 }
 
 
@@ -210,7 +211,7 @@ void AMiraiKomachi::Roll()
 #pragma region Attack
 void AMiraiKomachi::Attack(FVector StickValue)
 {
-	if (!bCanAttack || !WeaponEquipped ||StickValue.Size() < 0.5) return;
+	if (!bCanAttack || !WeaponEquipped || !bTargetLocked ||StickValue.Size() < 0.5) return;
 	StickValue = StickValue.GetSafeNormal(); // Normalize magnitude to 1
 	StickValue.Y = -StickValue.Y;		// original y-axis is -1 when pointing upward 
 	float Angle = UKismetMathLibrary::Acos(FVector::DotProduct(StickValue, FVector(1, 0, 0)));

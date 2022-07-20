@@ -28,9 +28,6 @@ void AEnemyBase::BeginPlay()
 	ActiveState = EnemyState::IDLE;
 	Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	AIController = Cast<AAIController>(GetController());
-
-//	AttackHitBoxLeft->OnComponentBeginOverlap.AddDynamic(this, &AEnemyBase::AttackHitBoxOnBeginOverlap);
-//	AttackHitBoxRight->OnComponentBeginOverlap.AddDynamic(this, &AEnemyBase::AttackHitBoxOnBeginOverlap);
 }
 
 
@@ -50,7 +47,6 @@ void AEnemyBase::ApplyDamage(float DamageAmount)
 	CurrentDamage = DamageAmount;
 	GenerateDamageText();
 	if (CurrentHealth > 0) return;
-
 	// enemy is dead
 	if (AIController) AIController->StopMovement();
 	ChangeState(EnemyState::DEAD);
@@ -82,6 +78,7 @@ void AEnemyBase::AttackHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedCompo
 			{
 				const float MinDamage = Damage * 0.9;
 				const float MaxDamage = Damage * 1.1;
+				UE_LOG(LogTemp, Warning, TEXT("%s"), *OverlappedComponent->GetName());
 				Target->ApplyDamage(static_cast<int>(FMath::RandRange(MinDamage, MaxDamage)));
 			}
 
@@ -193,6 +190,7 @@ void AEnemyBase::StateStun()
 void AEnemyBase::StateDead()
 {
 	if (GetCurrentMontage()) StopAnimMontage();
+	UE_LOG(LogTemp,Warning, TEXT("Dieeeeeeeeeeeeeeeeeeeeee"));
 	bIsDead = true;
 	bCanDealDamage = false;
 	AMiraiKomachi* Komachi = Cast<AMiraiKomachi>(Player);
