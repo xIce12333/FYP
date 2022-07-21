@@ -6,7 +6,6 @@
 #include "Character/BaseClass/Combatant.h"
 #include "GameFramework/Character.h"
 #include "KomachiStateManager.h"
-#include "Weapon.h"
 #include "Containers/Array.h"
 #include "Components/InputComponent.h"
 #include "Character/BaseClass/EnemyBase.h"
@@ -85,7 +84,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
-	void EquipWeapon(AWeapon* Weapon);
+	void EquipWeapon(class AWeapon* Weapon);
 
 	UPROPERTY(BlueprintReadOnly)
 		AWeapon* WeaponEquipped;
