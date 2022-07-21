@@ -32,6 +32,7 @@ void AWeapon::BeginPlay()
 	Super::BeginPlay();
 
 	SphereCollision->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnOverlapBegin);
+	
 }
 
 // Called every frame
@@ -47,10 +48,21 @@ void AWeapon::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* O
 	if (OtherActor->ActorHasTag("Player"))
 	{
 		AMiraiKomachi* Player = Cast<AMiraiKomachi>(OtherActor);
-		if (Player)
-		{
-			Player->EquipWeapon(this);
-		}
+		if (!Player) return;
+		bCanPick = true;
+		Player->EquipWeapon(this);
+		
+	}
+}
+
+void AWeapon::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor->ActorHasTag("Player"))
+	{
+		AMiraiKomachi* Player = Cast<AMiraiKomachi>(OtherActor);
+		if (!Player) return;
+		bCanPick = false;
 	}
 }
 

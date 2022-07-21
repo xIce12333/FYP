@@ -5,21 +5,6 @@
 
 #include <windowsx.h>
 
-/*void UKomachiAnimNotify_Attack::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
-{
-	if (MeshComp && MeshComp->GetOwner())
-	{
-		AMiraiKomachi* Player = Cast<AMiraiKomachi>(MeshComp->GetOwner());
-		if (Player)
-		{
-			if (Player->bCanMove)
-				Player->bCanAttack = false;
-			
-			Player->bCanMove = !Player->bCanMove;
-			Player->bUseControllerRotationYaw = (Player->bTargetLocked)? true : false;
-		}
-	}
-} */
 
 void UKomachiAnimNotify_Attack::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
 	float TotalDuration)

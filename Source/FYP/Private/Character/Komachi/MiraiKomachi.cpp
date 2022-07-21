@@ -202,7 +202,7 @@ void AMiraiKomachi::ToggleGuard()
 
 void AMiraiKomachi::Roll()
 {
-	if(!bCanRoll) return;
+	if(!bCanRoll || !bCanMove) return;
 	PlayAnimMontage(M_Roll, 1.5);
 }
 

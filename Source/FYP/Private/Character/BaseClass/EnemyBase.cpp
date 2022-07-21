@@ -60,7 +60,26 @@ void AEnemyBase::AttackHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedCompo
 	if (bCanDealDamage)
 	{
 		AMiraiKomachi* Target = Cast<AMiraiKomachi>(OtherActor);
-		if (Target)
+		
+		if (OtherActor->ActorHasTag("PlayerWeapon"))		// Enemy hits player's weapon
+		{
+			AMiraiKomachi* Komachi = Cast<AMiraiKomachi>(Player);
+			if (Komachi && Komachi->CheckGuardSuccessful(this))
+			{
+				bCanDealDamage = false;
+				Komachi->GuardSuccessful();
+				if (GetCurrentMontage()) StopAnimMontage();
+				if (!CheckStun() && M_Choke)		
+				{
+					PlayAnimMontage(M_Choke);
+				}
+				else
+					ChangeState(EnemyState::STUN);
+
+				return;
+			}
+		}
+		else if (Target)
 		{
 			bCanDealDamage = false;
 			if (Target->CheckGuardSuccessful(this))

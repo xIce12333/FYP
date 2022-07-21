@@ -37,8 +37,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float DamageAmount = 10.0f;
 
+	bool bCanPick = false;
+
 	UFUNCTION()
 		virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, 
 			bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	virtual void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+		UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, 
+		bool bFromSweep, const FHitResult& SweepResult);
+	
 };	
