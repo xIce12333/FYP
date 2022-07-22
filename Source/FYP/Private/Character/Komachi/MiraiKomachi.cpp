@@ -370,6 +370,7 @@ void AMiraiKomachi::OnEnemyDetectionEndOverlap(UPrimitiveComponent* OverlappedCo
 
 void AMiraiKomachi::PickUpItem()
 {
+	if (!ItemPicking) return;
 	ItemPicking->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, 
 		TEXT("WeaponSocketBottom"));
 
@@ -407,7 +408,6 @@ void AMiraiKomachi::ApplyDamage(float DamageAmount)
 	if (CurrentHealth <= 0)
 	{
 		bIsDead = true;
-		PlayerDied.Broadcast();
 		if (GetCurrentMontage()) StopAnimMontage();
 		APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 		this->DisableInput(PlayerController);

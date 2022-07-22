@@ -60,7 +60,6 @@ void AEnemyBase::ApplyDamage(float DamageAmount)
 void AEnemyBase::AttackHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *OtherActor->GetName());
 	if (bCanDealDamage)
 	{
 		AMiraiKomachi* Target = Cast<AMiraiKomachi>(OtherActor);
@@ -101,6 +100,8 @@ void AEnemyBase::AttackHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedCompo
 			{
 				const float MinDamage = Damage * 0.9;
 				const float MaxDamage = Damage * 1.1;
+
+				UE_LOG(LogTemp, Warning, TEXT("Compoenet: %s"), *OverlappedComponent->GetName());
 				Target->ApplyDamage(static_cast<int>(FMath::RandRange(MinDamage, MaxDamage)));
 			}
 

@@ -124,6 +124,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void ToggleStrafe();
 	TArray<class AActor*> NearbyEnemies;
+
+	UFUNCTION(BlueprintCallable)
+		void BroadCastPlayerDied() { PlayerDied.Broadcast();}
 private:
 	void MoveForward(const float Axis);
 	void MoveRight(const float Axis);
