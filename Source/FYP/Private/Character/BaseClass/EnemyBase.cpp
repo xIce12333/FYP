@@ -2,6 +2,10 @@
 
 
 #include "Character/BaseClass/EnemyBase.h"
+
+#include <mutex>
+
+#include "Blueprint/UserWidget.h"
 #include "Character/Komachi/MiraiKomachi.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -36,7 +40,6 @@ void AEnemyBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	TickStateMachine();
-	
 }
 
 
@@ -57,6 +60,7 @@ void AEnemyBase::ApplyDamage(float DamageAmount)
 void AEnemyBase::AttackHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *OtherActor->GetName());
 	if (bCanDealDamage)
 	{
 		AMiraiKomachi* Target = Cast<AMiraiKomachi>(OtherActor);

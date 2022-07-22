@@ -15,6 +15,10 @@
 
 class APickableItem;
 class AWeapon;
+
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerDied);
+
 UCLASS()
 class FYP_API AMiraiKomachi : public ACombatant
 {
@@ -23,7 +27,9 @@ class FYP_API AMiraiKomachi : public ACombatant
 public:
 	// Sets default values for this character's properties
 	AMiraiKomachi();
-	
+
+	UPROPERTY(BlueprintAssignable)
+		FPlayerDied PlayerDied;
 	
 	bool bCanAttack;
 	bool bIsRolling;

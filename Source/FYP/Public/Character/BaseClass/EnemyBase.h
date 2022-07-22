@@ -7,6 +7,7 @@
 #include "Combatant.h"
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/WidgetComponent.h"
 #include "GameFramework/Character.h"
 #include "EnemyBase.generated.h"
 
@@ -37,6 +38,8 @@ public:
 		UBoxComponent* AttackHitBoxLeft;
 	UPROPERTY(EditAnywhere)
 		UBoxComponent* AttackHitBoxRight;
+	UPROPERTY(EditAnywhere)
+		UWidgetComponent* LockOnCrosshair;
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

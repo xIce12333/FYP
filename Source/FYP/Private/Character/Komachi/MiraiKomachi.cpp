@@ -62,6 +62,7 @@ void AMiraiKomachi::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction("Strafe", IE_Pressed, this, &AMiraiKomachi::ToggleStrafe);
 	PlayerInputComponent->BindAction("CycleLeft", IE_Pressed, this, &AMiraiKomachi::CycleLeft);
 	PlayerInputComponent->BindAction("CycleRight", IE_Pressed, this, &AMiraiKomachi::CycleRight);
+	
 }
 
 
@@ -72,6 +73,7 @@ void AMiraiKomachi::MoveForward(const float Axis)
 	const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
 	const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 	AddMovementInput(Direction, Axis);
+	
 	
 }
 
@@ -111,8 +113,8 @@ void AMiraiKomachi::ToggleStrafe()
 	bUseControllerRotationYaw = !bUseControllerRotationYaw;
 	if (bTargetLocked)
 	{
-		TargetEnemy = FindNearestEnemy();
 		GetCharacterMovement()->MaxWalkSpeed = StrafeSpeed;
+		TargetEnemy = FindNearestEnemy();
 	}
 	else
 	{
@@ -152,7 +154,8 @@ void AMiraiKomachi::CycleRight()
 void AMiraiKomachi::CycleEnemy(bool bRight)
 {
 	if (!TargetEnemy) return;
-	
+//	AEnemyBase* Enemy = Cast<AEnemyBase>(TargetEnemy);
+//	if (Enemy) Enemy->LockOnCrosshair->SetVisibility(false);
 	AActor* SuitableTarget = nullptr;
 	const FVector CameraLocation = Cast<APlayerController>(GetController())->PlayerCameraManager->GetCameraLocation();
 
@@ -181,7 +184,6 @@ void AMiraiKomachi::CycleEnemy(bool bRight)
 
 	if (!SuitableTarget) return;
 	TargetEnemy = SuitableTarget;
-
 }
 
 void AMiraiKomachi::CameraRight(const float Axis)
@@ -405,6 +407,7 @@ void AMiraiKomachi::ApplyDamage(float DamageAmount)
 	if (CurrentHealth <= 0)
 	{
 		bIsDead = true;
+		PlayerDied.Broadcast();
 		if (GetCurrentMontage()) StopAnimMontage();
 		APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 		this->DisableInput(PlayerController);

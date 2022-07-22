@@ -57,7 +57,7 @@ void APickableItem::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActo
 void APickableItem::Tick(float DeltaTime)
 {
 	if (!bCanPick || !PlayerController || !Player->bCanPickItem) return;
-
+	
 	for (auto Action : ActionMapping)
 	{
 		if (PlayerController->WasInputKeyJustPressed(Action.Key))
@@ -75,6 +75,7 @@ void APickableItem::GetPicked()
 	SphereCollision->OnComponentEndOverlap.RemoveDynamic(this, &APickableItem::OnOverlapEnd);
 	if (!Player->M_PickUp) return;
 	Player->ItemPicking = this;
+	bCanPick = false;
 	Player->PlayAnimMontage(Player->M_PickUp, 1.5);
 }
 
