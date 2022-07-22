@@ -208,7 +208,6 @@ void AEnemyBase::StateStun()
 void AEnemyBase::StateDead()
 {
 	if (GetCurrentMontage()) StopAnimMontage();
-	UE_LOG(LogTemp,Warning, TEXT("Dieeeeeeeeeeeeeeeeeeeeee"));
 	bIsDead = true;
 	bCanDealDamage = false;
 	AMiraiKomachi* Komachi = Cast<AMiraiKomachi>(Player);

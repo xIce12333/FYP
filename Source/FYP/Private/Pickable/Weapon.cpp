@@ -55,7 +55,5 @@ void AWeapon::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 void AWeapon::GetPicked()
 {
 	Super::GetPicked();
-	PickUpIcon->SetVisibility(false);
-	Player->EquipWeapon(this);
 }
 

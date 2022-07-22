@@ -12,6 +12,7 @@ void UKomachiAnimNotify_PickUp::NotifyBegin(USkeletalMeshComponent* MeshComp, UA
 		if (!Player) return;
 		Player->bCanMove = false;
 		Player->bIsInvulnerable = true;
+		Player->bCanPickItem = false;
 		
 	}
 }
@@ -24,5 +25,6 @@ void UKomachiAnimNotify_PickUp::NotifyEnd(USkeletalMeshComponent* MeshComp, UAni
 		if (!Player) return;
 		Player->bCanMove = true;
 		Player->bIsInvulnerable = false;
+		Player->bCanPickItem = true;
 	}
 }

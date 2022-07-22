@@ -13,6 +13,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "MiraiKomachi.generated.h"
 
+class APickableItem;
+class AWeapon;
 UCLASS()
 class FYP_API AMiraiKomachi : public ACombatant
 {
@@ -36,6 +38,7 @@ public:
 	bool bGuardSW;
 	bool bCanRoll;
 	bool bIsInvulnerable;
+	bool bCanPickItem;
 	
 	UPROPERTY(BlueprintReadOnly)
 		float RunSpeed = 700;
@@ -70,9 +73,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = Animations)
 		UAnimMontage* M_Hurt;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = Animations)
-		UAnimMontage* M_Guard;
+		UAnimMontage* M_GuardLeft;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = Animations)
-		UAnimMontage* M_GuardSuccessful;
+		UAnimMontage* M_GuardLeftSuccessful;
+		
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = Animations)
+		UAnimMontage* M_GuardRight;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = Animations)
+		UAnimMontage* M_GuardRightSuccessful;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = Animations)
+		UAnimMontage* M_PickUp;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -83,11 +93,13 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
-	void EquipWeapon(class AWeapon* Weapon);
+
+	UFUNCTION(BlueprintCallable)
+		void PickUpItem();
 
 	UPROPERTY(BlueprintReadOnly)
 		AWeapon* WeaponEquipped;
+	APickableItem* ItemPicking;
 
 	UFUNCTION()
 	virtual void WeaponHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor

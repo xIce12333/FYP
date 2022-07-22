@@ -19,6 +19,7 @@ AMiraiKomachi::AMiraiKomachi()
 	bCanGuard = true;
 	bIsInvulnerable = false;
 	bCanRoll = true;
+	bCanPickItem = true;
 	StopGuard();
 	EnemyDetectionCollider = CreateDefaultSubobject<USphereComponent>(TEXT("Enemy Detection Collider"));
 	EnemyDetectionCollider->SetupAttachment(RootComponent);
@@ -245,10 +246,10 @@ void AMiraiKomachi::MeleeE()
 {
 	UE_LOG(LogTemp, Warning, TEXT("E"));
 
-	if (bGuardPressed && M_Guard)
+	if (bGuardPressed && M_GuardRight)
 	{
 		bGuardE = true;
-		PlayAnimMontage(M_Guard);
+		PlayAnimMontage(M_GuardRight);
 	}
 	else if (bCanAttack && M_MeleeE)
 	{
@@ -265,10 +266,10 @@ void AMiraiKomachi::MeleeW()
 {
 	UE_LOG(LogTemp, Warning, TEXT("W"));
 
-	if (bGuardPressed && M_Guard)
+	if (bGuardPressed && M_GuardLeft)
 	{
 		bGuardW = true;
-		PlayAnimMontage(M_Guard);
+		PlayAnimMontage(M_GuardLeft);
 	}
 	else if (bCanAttack && M_MeleeW)
 	{
@@ -281,10 +282,10 @@ void AMiraiKomachi::MeleeNE()
 {
 	UE_LOG(LogTemp, Warning, TEXT("NE"));
 
-	if (bGuardPressed && M_Guard)
+	if (bGuardPressed && M_GuardRight)
 	{
 		bGuardNE = true;
-		PlayAnimMontage(M_Guard);
+		PlayAnimMontage(M_GuardRight);
 	}
 	else if (bCanAttack && M_MeleeNE)
 	{
@@ -297,10 +298,10 @@ void AMiraiKomachi::MeleeNW()
 {
 	UE_LOG(LogTemp, Warning, TEXT("NW"));
 
-	if (bGuardPressed && M_Guard)
+	if (bGuardPressed && M_GuardLeft)
 	{
 		bGuardNW = true;
-		PlayAnimMontage(M_Guard);
+		PlayAnimMontage(M_GuardLeft);
 	}
 	else if (bCanAttack && M_MeleeNW)
 	{
@@ -312,10 +313,10 @@ void AMiraiKomachi::MeleeSE()
 {
 	UE_LOG(LogTemp, Warning, TEXT("SE"));
 
-	if (bGuardPressed && M_Guard)
+	if (bGuardPressed && M_GuardRight)
 	{
 		bGuardSE = true;
-		PlayAnimMontage(M_Guard);
+		PlayAnimMontage(M_GuardRight);
 	}
 	else if (bCanAttack && M_MeleeSE)
 	{
@@ -328,10 +329,10 @@ void AMiraiKomachi::MeleeSW()
 {
 	UE_LOG(LogTemp, Warning, TEXT("SW"));
 
-	if (bGuardPressed && M_Guard)
+	if (bGuardPressed && M_GuardLeft)
 	{
 		bGuardSW = true;
-		PlayAnimMontage(M_Guard);
+		PlayAnimMontage(M_GuardLeft);
 	}
 	else if (bCanAttack && M_MeleeSW)
 	{
@@ -365,15 +366,17 @@ void AMiraiKomachi::OnEnemyDetectionEndOverlap(UPrimitiveComponent* OverlappedCo
 
 #pragma endregion Attack
 
-void AMiraiKomachi::EquipWeapon(AWeapon* Weapon)
+void AMiraiKomachi::PickUpItem()
 {
-	if (WeaponEquipped) return;
-
-	Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, 
+	ItemPicking->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, 
 		TEXT("WeaponSocketBottom"));
 
+	if (WeaponEquipped) return;
+	AWeapon* Weapon = Cast<AWeapon>(ItemPicking);
+	if (!Weapon) return;
 	WeaponEquipped = Weapon;
 	WeaponEquipped->AttackHitBox->OnComponentBeginOverlap.AddDynamic(this, &AMiraiKomachi::WeaponHitBoxOnBeginOverlap);
+	ItemPicking = nullptr;
 }
 
 void AMiraiKomachi::WeaponHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -439,7 +442,9 @@ bool AMiraiKomachi::CheckGuardSuccessful(const AEnemyBase* Enemy) const
 
 void AMiraiKomachi::GuardSuccessful()
 {
-	if (!M_GuardSuccessful) return;
+	if (bGuardE || bGuardNE || bGuardSE)
+		PlayAnimMontage(M_GuardRightSuccessful);
+	else if (bGuardW || bGuardNW || bGuardSW)
+		PlayAnimMontage(M_GuardLeftSuccessful);
 	CameraShake();
-	PlayAnimMontage(M_GuardSuccessful);
 }

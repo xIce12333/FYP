@@ -56,7 +56,7 @@ void APickableItem::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActo
 // Called every frame
 void APickableItem::Tick(float DeltaTime)
 {
-	if (!bCanPick || !PlayerController) return;
+	if (!bCanPick || !PlayerController || !Player->bCanPickItem) return;
 
 	for (auto Action : ActionMapping)
 	{
@@ -70,7 +70,12 @@ void APickableItem::Tick(float DeltaTime)
 void APickableItem::GetPicked()
 {
 	bIsPicked = true;
-	// Empty for now because inventory system is not implemented
+	PickUpIcon->SetVisibility(false);
+	SphereCollision->OnComponentBeginOverlap.RemoveDynamic(this, &APickableItem::OnOverlapBegin);
+	SphereCollision->OnComponentEndOverlap.RemoveDynamic(this, &APickableItem::OnOverlapEnd);
+	if (!Player->M_PickUp) return;
+	Player->ItemPicking = this;
+	Player->PlayAnimMontage(Player->M_PickUp, 1.5);
 }
 
 
