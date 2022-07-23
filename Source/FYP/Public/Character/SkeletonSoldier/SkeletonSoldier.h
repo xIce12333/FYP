@@ -13,5 +13,12 @@ UCLASS()
 class FYP_API ASkeletonSoldier : public AEnemyBase
 {
 	GENERATED_BODY()
-	
+public:
+	ASkeletonSoldier();
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+		class UStaticMeshComponent* Weapon;
+
+	virtual void Attack() override;
+
 };

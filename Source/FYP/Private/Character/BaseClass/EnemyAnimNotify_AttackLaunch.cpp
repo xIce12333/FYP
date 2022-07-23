@@ -14,7 +14,7 @@ void UEnemyAnimNotify_AttackLaunch::NotifyBegin(USkeletalMeshComponent* MeshComp
 		const FVector ForwardDir = Enemy->GetActorRotation().Vector();
 		Enemy->bCanDealDamage = true;
 		Enemy->LaunchCharacter(ForwardDir * Enemy->AttackSpeed, true, true);
-		
+		UE_LOG(LogTemp, Warning, TEXT("%f"), Enemy->AttackSpeed);
 	}
 }
 

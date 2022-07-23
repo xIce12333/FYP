@@ -20,9 +20,9 @@ AEnemyBase::AEnemyBase()
 	bIsStunning = false;
 	bIsInvulnerable = false;
 	AttackHitBoxLeft = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackHitBoxLeft"));
-	AttackHitBoxLeft->SetupAttachment(GetMesh(), TEXT("HitboxSocketLeft"));
+	AttackHitBoxLeft->SetupAttachment(GetMesh(), TEXT("AttackSocketLeft"));
 	AttackHitBoxRight = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackHitBoxRight"));
-	AttackHitBoxRight->SetupAttachment(GetMesh(), TEXT("HitboxSocketRight"));
+	AttackHitBoxRight->SetupAttachment(GetMesh(), TEXT("AttackSocketRight"));  
 }
 
 // Called when the game starts or when spawned
@@ -32,6 +32,8 @@ void AEnemyBase::BeginPlay()
 	ActiveState = EnemyState::IDLE;
 	Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	AIController = Cast<AAIController>(GetController());
+	AttackHitBoxLeft->OnComponentBeginOverlap.AddDynamic(this, &AEnemyBase::AttackHitBoxOnBeginOverlap);
+	AttackHitBoxRight->OnComponentBeginOverlap.AddDynamic(this, &AEnemyBase::AttackHitBoxOnBeginOverlap);
 }
 
 
@@ -60,11 +62,12 @@ void AEnemyBase::ApplyDamage(float DamageAmount)
 void AEnemyBase::AttackHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (!OtherActor) return;
 	if (bCanDealDamage)
 	{
 		AMiraiKomachi* Target = Cast<AMiraiKomachi>(OtherActor);
 		
-		if (OtherActor->ActorHasTag("PlayerWeapon"))		// Enemy hits player's weapon
+		if (OtherActor->ActorHasTag("PlayerWeapon") && !bIsStrongAttack)		// Enemy hits player's weapon
 		{
 			AMiraiKomachi* Komachi = Cast<AMiraiKomachi>(Player);
 			if (Komachi && Komachi->CheckGuardSuccessful(this))
@@ -74,6 +77,7 @@ void AEnemyBase::AttackHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedCompo
 				if (GetCurrentMontage()) StopAnimMontage();
 				if (!CheckStun() && M_Choke)		
 				{
+					LaunchCharacter(-GetActorRotation().Vector()* KnockBackSpeed, true, true);
 					PlayAnimMontage(M_Choke);
 				}
 				else
@@ -85,7 +89,7 @@ void AEnemyBase::AttackHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedCompo
 		else if (Target)
 		{
 			bCanDealDamage = false;
-			if (Target->CheckGuardSuccessful(this))
+			if (!bIsStrongAttack && Target->CheckGuardSuccessful(this))
 			{
 				Target->GuardSuccessful();
 				if (GetCurrentMontage()) StopAnimMontage();
@@ -100,13 +104,10 @@ void AEnemyBase::AttackHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedCompo
 			{
 				const float MinDamage = Damage * 0.9;
 				const float MaxDamage = Damage * 1.1;
-
-				UE_LOG(LogTemp, Warning, TEXT("Compoenet: %s"), *OverlappedComponent->GetName());
 				Target->ApplyDamage(static_cast<int>(FMath::RandRange(MinDamage, MaxDamage)));
 			}
-
 		}
-	}
+	} 
 }
 
 bool AEnemyBase::CheckStun()
@@ -124,6 +125,7 @@ bool AEnemyBase::CheckStun()
 void AEnemyBase::StunEnd()
 {
 	bIsStunning = false;
+	EnemyStun.Broadcast(false);
 	AttackEnd();
 }
 
@@ -198,8 +200,6 @@ void AEnemyBase::StateAttack()
 	FacePlayer();
 	const float StartAttackDelay = FMath::RandRange(StartAttackDelayMin, StartAttackDelayMax);
 	RandomAttack =  FMath::RandRange(0, M_Attack.Num() - 1);
-	AttackHitBoxLeft->OnComponentBeginOverlap.AddDynamic(this, &AEnemyBase::AttackHitBoxOnBeginOverlap);
-	AttackHitBoxRight->OnComponentBeginOverlap.AddDynamic(this, &AEnemyBase::AttackHitBoxOnBeginOverlap);
 	GetWorldTimerManager().SetTimer(AttackTimer, this, &AEnemyBase::Attack, StartAttackDelay);
 }
 
@@ -207,6 +207,7 @@ void AEnemyBase::StateStun()
 {
 	if (bIsStunning) return;
 	bIsStunning = true;
+	EnemyStun.Broadcast(true);
 	GetWorldTimerManager().SetTimer(StunTimer, this, &AEnemyBase::StunEnd, StunTime);
 }
 
@@ -214,6 +215,7 @@ void AEnemyBase::StateDead()
 {
 	if (GetCurrentMontage()) StopAnimMontage();
 	bIsDead = true;
+	EnemyDied.Broadcast();
 	bCanDealDamage = false;
 	AMiraiKomachi* Komachi = Cast<AMiraiKomachi>(Player);
 	if (Komachi)

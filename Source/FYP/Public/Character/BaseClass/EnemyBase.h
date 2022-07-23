@@ -22,6 +22,10 @@ enum class EnemyState : uint8
 	DEAD
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEnemyDied);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FEnemyStun, bool, bIsStun);
+
+
 UCLASS()
 class FYP_API AEnemyBase : public ACombatant
 {
@@ -33,6 +37,12 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State Machine")
 		EnemyState ActiveState;
+
+	UPROPERTY(BlueprintAssignable)
+		FEnemyDied EnemyDied;
+
+	UPROPERTY(BlueprintAssignable)
+		FEnemyStun EnemyStun;
 
 	UPROPERTY(EditAnywhere)
 		UBoxComponent* AttackHitBoxLeft;
@@ -52,7 +62,12 @@ public:
 	bool MeleeNW;
 	bool MeleeSE;
 	bool MeleeSW;
-	float AttackSpeed = 700;
+	bool bIsStrongAttack = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float AttackSpeed = 700;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float KnockBackSpeed = 500;
 	
 	UPROPERTY(BlueprintReadOnly)
 		bool bIsStunning;
@@ -62,6 +77,9 @@ public:
 		virtual void AttackHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor
 			, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 			bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION(BlueprintCallable)
+		void AttackEnd();
 	
 protected:
 	// Called when the game starts or when spawned
@@ -76,8 +94,6 @@ protected:
 	// if player enters this range, enemy will start attacking
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")	
 		float AttackRange = 200.0f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = Animations)
-		UAnimMontage* M_Die;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = Animations)
 		UAnimMontage* M_Choke;
 	AActor* Player;
@@ -108,9 +124,6 @@ protected:
 	virtual void Attack();
 	void ResetCanMove();
 	void MoveTowardsPlayer() const;
-
-	UFUNCTION(BlueprintCallable)
-		void AttackEnd();
 	float FindPlayerDistance() const;		// Distance between enemy and player
 	void FacePlayer();
 	void DisposeEnemy();

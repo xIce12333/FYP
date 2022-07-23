@@ -347,7 +347,6 @@ void AMiraiKomachi::OnEnemyDetectionBeginOverlap(UPrimitiveComponent* Overlapped
 {
 	if (Cast<AEnemyBase>(OtherActor) && !NearbyEnemies.Contains(OtherActor))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Enter: %s"), *OtherActor->GetName());
 		NearbyEnemies.Add(OtherActor);
 	}
 		
@@ -358,7 +357,6 @@ void AMiraiKomachi::OnEnemyDetectionEndOverlap(UPrimitiveComponent* OverlappedCo
 {
 	if (Cast<AEnemyBase>(OtherActor) && NearbyEnemies.Contains(OtherActor))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Exit: %s"), *OtherActor->GetName());
 		NearbyEnemies.Remove(OtherActor);
 		if (NearbyEnemies.Num() == 0)
 			ToggleStrafe();
