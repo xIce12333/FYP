@@ -46,15 +46,15 @@ public:
 	bool bIsInvulnerable;
 	bool bCanPickItem;
 	
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float RunSpeed = 700;
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float StrafeSpeed = 350;
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float RollSpeed = 800;
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float MeleeAttackSpeed = 800;
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float KnockBackSpeed = 800;
 
 	bool CheckGuardSuccessful(const AEnemyBase* Enemy) const;

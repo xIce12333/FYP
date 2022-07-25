@@ -55,9 +55,12 @@ public:
 		UBoxComponent* AttackHitBoxLeft;
 	UPROPERTY(EditAnywhere)
 		UBoxComponent* AttackHitBoxRight;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UWidgetComponent* LockOnCrosshair;
 
+	UFUNCTION(BlueprintImplementableEvent)
+		void SetCrosshair(bool bActive);
+	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	
@@ -129,11 +132,10 @@ protected:
 	virtual void StateStun();
 	virtual void StateDead();
 	virtual void Attack();
-	void ResetCanMove();
 	void MoveTowardsPlayer() const;
 	float FindPlayerDistance() const;		// Distance between enemy and player
 	void FacePlayer();
-	void DisposeEnemy();
+	void DisposeEnemy() {Destroy();}
 	void ResetAttackBool();
 	int MaxStunCount = 2;
 	int CurrentStunCount;

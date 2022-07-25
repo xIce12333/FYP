@@ -19,4 +19,10 @@ public:
 		void RetryGame();
 	UFUNCTION(BlueprintCallable)
 		void QuitGame();
+
+protected:
+	virtual void Init() override;
+	virtual void Shutdown() override;
+	virtual void StartGameInstance() override;
+
 };

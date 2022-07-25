@@ -116,9 +116,19 @@ void AMiraiKomachi::ToggleStrafe()
 	{
 		GetCharacterMovement()->MaxWalkSpeed = StrafeSpeed;
 		TargetEnemy = FindNearestEnemy();
+		AEnemyBase* Enemy = Cast<AEnemyBase>(TargetEnemy);
+		if (Enemy)
+		{
+			Enemy->SetCrosshair(true);
+		}
 	}
 	else
 	{
+		AEnemyBase* Enemy = Cast<AEnemyBase>(TargetEnemy);
+		if (Enemy)
+		{
+			Enemy->SetCrosshair(false);
+		}
 		ToWalkSpeed();
 	}
 	
@@ -155,8 +165,6 @@ void AMiraiKomachi::CycleRight()
 void AMiraiKomachi::CycleEnemy(bool bRight)
 {
 	if (!TargetEnemy) return;
-//	AEnemyBase* Enemy = Cast<AEnemyBase>(TargetEnemy);
-//	if (Enemy) Enemy->LockOnCrosshair->SetVisibility(false);
 	AActor* SuitableTarget = nullptr;
 	const FVector CameraLocation = Cast<APlayerController>(GetController())->PlayerCameraManager->GetCameraLocation();
 
@@ -184,7 +192,13 @@ void AMiraiKomachi::CycleEnemy(bool bRight)
 	}
 
 	if (!SuitableTarget) return;
+	
+	if (TargetEnemy == SuitableTarget) return;
+	AEnemyBase* Enemy = Cast<AEnemyBase>(TargetEnemy);
+	if (Enemy) Enemy->SetCrosshair(false);
 	TargetEnemy = SuitableTarget;
+	Enemy = Cast<AEnemyBase>(TargetEnemy);
+	if (Enemy) Enemy->SetCrosshair(true);
 }
 
 void AMiraiKomachi::CameraRight(const float Axis)

@@ -14,3 +14,18 @@ void UGameInstanceController::QuitGame()
 {
 	// empty for now
 }
+
+void UGameInstanceController::Init()
+{
+	Super::Init();
+}
+
+void UGameInstanceController::Shutdown()
+{
+	Super::Shutdown();
+}
+
+void UGameInstanceController::StartGameInstance()
+{
+	Super::StartGameInstance();
+}
