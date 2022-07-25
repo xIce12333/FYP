@@ -4,6 +4,7 @@
 #include "Character/Komachi/MiraiKomachi.h"
 #include "Kismet/GameplayStatics.h"
 #include "Pickable/Weapon.h"
+#include "Character/BaseClass/EnemyBase.h"
 
 // Sets default values
 AMiraiKomachi::AMiraiKomachi()

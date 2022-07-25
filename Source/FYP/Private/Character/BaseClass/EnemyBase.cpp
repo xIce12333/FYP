@@ -20,9 +20,9 @@ AEnemyBase::AEnemyBase()
 	bIsStunning = false;
 	bIsInvulnerable = false;
 	AttackHitBoxLeft = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackHitBoxLeft"));
-	AttackHitBoxLeft->SetupAttachment(GetMesh(), TEXT("AttackSocketLeft"));
+	AttackHitBoxLeft->SetupAttachment(GetMesh(), ATTACK_SOCKET_LEFT);
 	AttackHitBoxRight = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackHitBoxRight"));
-	AttackHitBoxRight->SetupAttachment(GetMesh(), TEXT("AttackSocketRight"));  
+	AttackHitBoxRight->SetupAttachment(GetMesh(), ATTACK_SOCKET_RIGHT);  
 }
 
 // Called when the game starts or when spawned
@@ -62,53 +62,63 @@ void AEnemyBase::ApplyDamage(float DamageAmount)
 void AEnemyBase::AttackHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (!OtherActor) return;
+	
 	if (bCanDealDamage)
 	{
 		AMiraiKomachi* Target = Cast<AMiraiKomachi>(OtherActor);
 		
 		if (OtherActor->ActorHasTag("PlayerWeapon") && !bIsStrongAttack)		// Enemy hits player's weapon
 		{
-			AMiraiKomachi* Komachi = Cast<AMiraiKomachi>(Player);
-			if (Komachi && Komachi->CheckGuardSuccessful(this))
-			{
-				bCanDealDamage = false;
-				Komachi->GuardSuccessful();
-				if (GetCurrentMontage()) StopAnimMontage();
-				if (!CheckStun() && M_Choke)		
-				{
-					LaunchCharacter(-GetActorRotation().Vector()* KnockBackSpeed, true, true);
-					PlayAnimMontage(M_Choke);
-				}
-				else
-					ChangeState(EnemyState::STUN);
-
-				return;
-			}
+			HandleHitWeapon();
+			return;
 		}
-		else if (Target)
+		else if (Target)		// Enemy hits player
 		{
-			bCanDealDamage = false;
-			if (!bIsStrongAttack && Target->CheckGuardSuccessful(this))
-			{
-				Target->GuardSuccessful();
-				if (GetCurrentMontage()) StopAnimMontage();
-				if (!CheckStun() && M_Choke)		
-				{
-					PlayAnimMontage(M_Choke);
-				}
-				else
-					ChangeState(EnemyState::STUN);
-			}
-			else 
-			{
-				const float MinDamage = Damage * 0.9;
-				const float MaxDamage = Damage * 1.1;
-				Target->ApplyDamage(static_cast<int>(FMath::RandRange(MinDamage, MaxDamage)));
-			}
+			HandleHitPlayer(Target);
 		}
 	} 
 }
+
+void AEnemyBase::HandleHitWeapon()
+{
+	AMiraiKomachi* Komachi = Cast<AMiraiKomachi>(Player);
+	if (Komachi && Komachi->CheckGuardSuccessful(this))
+	{
+		bCanDealDamage = false;
+		Komachi->GuardSuccessful();
+		if (GetCurrentMontage()) StopAnimMontage();
+		if (!CheckStun() && M_Choke)		
+		{
+			LaunchCharacter(-GetActorRotation().Vector()* KnockBackSpeed, true, true);
+			PlayAnimMontage(M_Choke);
+		}
+		else
+			ChangeState(EnemyState::STUN);
+	}
+}
+
+void AEnemyBase::HandleHitPlayer(AMiraiKomachi* Target)
+{
+	bCanDealDamage = false;
+	if (!bIsStrongAttack && Target->CheckGuardSuccessful(this))
+	{
+		Target->GuardSuccessful();
+		if (GetCurrentMontage()) StopAnimMontage();
+		if (!CheckStun() && M_Choke)		
+		{
+			PlayAnimMontage(M_Choke);
+		}
+		else
+			ChangeState(EnemyState::STUN);
+	}
+	else 
+	{
+		const float MinDamage = Damage * 0.9;
+		const float MaxDamage = Damage * 1.1;
+		Target->ApplyDamage(static_cast<int>(FMath::RandRange(MinDamage, MaxDamage)));
+	}
+}
+
 
 bool AEnemyBase::CheckStun()
 {

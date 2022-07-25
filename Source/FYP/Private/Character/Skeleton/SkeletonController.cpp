@@ -13,7 +13,6 @@ ASkeletonController::ASkeletonController()
 
 void ASkeletonController::Attack()
 {
-
 	Super::Attack();
 }
 

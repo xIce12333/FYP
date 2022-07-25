@@ -5,11 +5,18 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "Combatant.h"
+#include "Character/Komachi/MiraiKomachi.h"
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/Character.h"
 #include "EnemyBase.generated.h"
+
+
+
+#define ATTACK_SOCKET_LEFT "AttackSocketLeft"
+#define ATTACK_SOCKET_RIGHT "AttackSocketRight"
+
 
 
 UENUM(BlueprintType)
@@ -25,7 +32,7 @@ enum class EnemyState : uint8
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEnemyDied);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FEnemyStun, bool, bIsStun);
 
-
+class AMiraiKomachi;
 UCLASS()
 class FYP_API AEnemyBase : public ACombatant
 {
@@ -133,4 +140,6 @@ protected:
 	float StunTime = 3;
 	bool CheckStun();
 	void StunEnd();
+	void HandleHitWeapon();
+	void HandleHitPlayer(AMiraiKomachi* Target);
 };

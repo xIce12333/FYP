@@ -8,13 +8,13 @@
 #include "KomachiStateManager.h"
 #include "Containers/Array.h"
 #include "Components/InputComponent.h"
-#include "Character/BaseClass/EnemyBase.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "MiraiKomachi.generated.h"
 
 class APickableItem;
 class AWeapon;
+class AEnemyBase;
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerDied);
