@@ -29,6 +29,7 @@ void UKomachiAnimNotify_Attack::NotifyEnd(USkeletalMeshComponent* MeshComp, UAni
 		{
 			Player->bCanMove = true;
 			Player->bCanDealDamage = false;
+			Player->HitEnemies.Empty();
 			Player->bCanAttack = true;
 		}
 	}

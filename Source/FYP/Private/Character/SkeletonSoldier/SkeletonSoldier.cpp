@@ -12,7 +12,7 @@ ASkeletonSoldier::ASkeletonSoldier()
 void ASkeletonSoldier::StateAttack()
 {
 	if (bIsAttacking) return;
-	const int RandomAttackChoice = FMath::RandRange(0, 0);
+	const int RandomAttackChoice = FMath::RandRange(0, 4);
 	if (RandomAttackChoice > 0)				// P(Strong attack) = 20%
 	{
 		Super::StateAttack();

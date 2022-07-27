@@ -124,6 +124,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void ToggleStrafe();
 	TArray<class AActor*> NearbyEnemies;
+	TArray<class AActor*> HitEnemies;
 
 	UFUNCTION(BlueprintCallable)
 		void BroadCastPlayerDied() { PlayerDied.Broadcast();}

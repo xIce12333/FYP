@@ -398,16 +398,14 @@ void AMiraiKomachi::WeaponHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedCo
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	AEnemyBase* Enemy = Cast<AEnemyBase>(OtherActor);
-	if (bCanDealDamage)
+	if (Enemy && !HitEnemies.Contains(OtherActor) && bCanDealDamage)
 	{
-		if (Enemy)
-		{
-			bCanDealDamage = false;
-			const float MinDamage = WeaponEquipped->DamageAmount * 0.9;
-			const float MaxDamage = WeaponEquipped->DamageAmount * 1.1;
-			Enemy->ApplyDamage(static_cast<int>(FMath::RandRange(MinDamage, MaxDamage)));
-		}
+		HitEnemies.Add(OtherActor);
+		const float MinDamage = WeaponEquipped->DamageAmount * 0.9;
+		const float MaxDamage = WeaponEquipped->DamageAmount * 1.1;
+		Enemy->ApplyDamage(static_cast<int>(FMath::RandRange(MinDamage, MaxDamage)));
 	}
+
 }
 
 void AMiraiKomachi::ApplyDamage(float DamageAmount)

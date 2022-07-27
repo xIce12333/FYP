@@ -56,9 +56,9 @@ void AEnemyBase::ApplyDamage(float DamageAmount)
 	GenerateDamageText();
 	if (CurrentHealth > 0) return;
 	// enemy is dead
+	if (GetCurrentMontage()) StopAnimMontage();
 	if (AIController) AIController->StopMovement();
 	ChangeState(EnemyState::DEAD);
-	GetWorld()->GetTimerManager().SetTimer(DisposeTimer, this, &AEnemyBase::DisposeEnemy, 5.0f);
 	
 }
 
@@ -227,8 +227,10 @@ void AEnemyBase::StateStun()
 void AEnemyBase::StateDead()
 {
 	if (GetCurrentMontage()) StopAnimMontage();
+	GetWorld()->GetTimerManager().SetTimer(DisposeTimer, this, &AEnemyBase::DisposeEnemy, 5.0f);
 	bIsDead = true;
 	EnemyDied.Broadcast();
+	SetCrosshair(false);
 	bCanDealDamage = false;
 	AMiraiKomachi* Komachi = Cast<AMiraiKomachi>(Player);
 	if (Komachi)
