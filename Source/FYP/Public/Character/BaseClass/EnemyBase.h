@@ -90,6 +90,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void AttackEnd();
+
+	void FacePlayer();
 	
 protected:
 	// Called when the game starts or when spawned
@@ -134,12 +136,13 @@ protected:
 	virtual void Attack();
 	void MoveTowardsPlayer() const;
 	float FindPlayerDistance() const;		// Distance between enemy and player
-	void FacePlayer();
 	void DisposeEnemy() {Destroy();}
 	void ResetAttackBool();
-	int MaxStunCount = 2;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int MaxStunCount = 2;
 	int CurrentStunCount;
-	float StunTime = 3;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float StunTime = 3;
 	bool CheckStun();
 	void StunEnd();
 	void HandleHitWeapon();

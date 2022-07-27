@@ -11,17 +11,6 @@ AMiraiKomachi::AMiraiKomachi()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	CurrentHealth = MaxHealth;
-	GetCharacterMovement()->bOrientRotationToMovement = true;
-	bCanAttack = true;
-	bIsRolling = false;
-	bIsGuarding = false;
-	bCanGuard = true;
-	bIsInvulnerable = false;
-	bCanRoll = true;
-	bCanPickItem = true;
-	StopGuard();
 	EnemyDetectionCollider = CreateDefaultSubobject<USphereComponent>(TEXT("Enemy Detection Collider"));
 	EnemyDetectionCollider->SetupAttachment(RootComponent);
 	EnemyDetectionCollider->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
@@ -34,6 +23,16 @@ AMiraiKomachi::AMiraiKomachi()
 void AMiraiKomachi::BeginPlay()
 {
 	Super::BeginPlay();
+	CurrentHealth = MaxHealth;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	bCanAttack = true;
+	bIsRolling = false;
+	bIsGuarding = false;
+	bCanGuard = true;
+	bIsInvulnerable = false;
+	bCanRoll = true;
+	bCanPickItem = true;
+	StopGuard();
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 	EnemyDetectionCollider->OnComponentBeginOverlap.AddDynamic(this, &AMiraiKomachi::OnEnemyDetectionBeginOverlap);
 	EnemyDetectionCollider->OnComponentEndOverlap.AddDynamic(this, &AMiraiKomachi::OnEnemyDetectionEndOverlap);

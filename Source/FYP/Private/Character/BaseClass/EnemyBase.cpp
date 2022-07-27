@@ -15,10 +15,6 @@ AEnemyBase::AEnemyBase()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	CurrentHealth = MaxHealth;
-	CurrentStunCount = MaxStunCount;
-	bIsStunning = false;
-	bIsInvulnerable = false;
 	AttackHitBoxLeft = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackHitBoxLeft"));
 	AttackHitBoxLeft->SetupAttachment(GetMesh(), ATTACK_SOCKET_LEFT);
 	AttackHitBoxRight = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackHitBoxRight"));
@@ -36,6 +32,11 @@ void AEnemyBase::BeginPlay()
 	AIController = Cast<AAIController>(GetController());
 	AttackHitBoxLeft->OnComponentBeginOverlap.AddDynamic(this, &AEnemyBase::AttackHitBoxOnBeginOverlap);
 	AttackHitBoxRight->OnComponentBeginOverlap.AddDynamic(this, &AEnemyBase::AttackHitBoxOnBeginOverlap);
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+	CurrentHealth = MaxHealth;
+	CurrentStunCount = MaxStunCount;
+	bIsStunning = false;
+	bIsInvulnerable = false;
 }
 
 
@@ -44,7 +45,6 @@ void AEnemyBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	TickStateMachine();
-	LockOnCrosshair->Deactivate();
 }
 
 
@@ -268,7 +268,7 @@ void AEnemyBase::Attack()
 		MeleeSW = true;
 		UE_LOG(LogTemp, Warning, TEXT("SW Attack!"));
 		break;
-	default:
+	case 5:
 		MeleeW = true;
 		UE_LOG(LogTemp, Warning, TEXT("W Attack!"));
 	}
