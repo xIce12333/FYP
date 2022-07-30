@@ -2,9 +2,6 @@
 
 
 #include "Character/BaseClass/EnemyBase.h"
-
-#include <mutex>
-
 #include "Blueprint/UserWidget.h"
 #include "Character/Komachi/MiraiKomachi.h"
 #include "Kismet/GameplayStatics.h"
@@ -21,6 +18,7 @@ AEnemyBase::AEnemyBase()
 	AttackHitBoxRight->SetupAttachment(GetMesh(), ATTACK_SOCKET_RIGHT);
 	LockOnCrosshair = CreateDefaultSubobject<UWidgetComponent>(TEXT("LockOnCrosshair"));
 	LockOnCrosshair->SetupAttachment(GetMesh());
+	Tags.Add("Enemy");
 }
 
 // Called when the game starts or when spawned
@@ -70,7 +68,7 @@ void AEnemyBase::AttackHitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedCompo
 	{
 		AMiraiKomachi* Target = Cast<AMiraiKomachi>(OtherActor);
 		
-		if (OtherActor->ActorHasTag("PlayerWeapon") && !bIsStrongAttack)		// Enemy hits player's weapon
+		if (OtherActor->ActorHasTag("Weapon") && !bIsStrongAttack)		// Enemy hits player's weapon
 		{
 			HandleHitWeapon();
 			return;

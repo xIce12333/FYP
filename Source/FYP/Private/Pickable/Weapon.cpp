@@ -22,7 +22,8 @@ AWeapon::AWeapon()
 
 	AttackHitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackHitBox"));
 	AttackHitBox->SetupAttachment(GetRootComponent());
-	
+
+	Tags.Add("Weapon");
 }
 
 // Called when the game starts or when spawned

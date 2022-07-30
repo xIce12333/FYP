@@ -17,6 +17,7 @@ AMiraiKomachi::AMiraiKomachi()
 	EnemyDetectionCollider->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn,
 		ECollisionResponse::ECR_Overlap);
 	EnemyDetectionCollider->SetSphereRadius(TargetLockDistance);
+	Tags.Add("Player");
 }
 
 // Called when the game starts or when spawned
@@ -62,6 +63,7 @@ void AMiraiKomachi::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction("Strafe", IE_Pressed, this, &AMiraiKomachi::ToggleStrafe);
 	PlayerInputComponent->BindAction("CycleLeft", IE_Pressed, this, &AMiraiKomachi::CycleLeft);
 	PlayerInputComponent->BindAction("CycleRight", IE_Pressed, this, &AMiraiKomachi::CycleRight);
+	PlayerInputComponent->BindAction("Pause", IE_Pressed, this, &AMiraiKomachi::SendPauseGame);
 	
 }
 

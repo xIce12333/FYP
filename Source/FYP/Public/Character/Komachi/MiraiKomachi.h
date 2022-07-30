@@ -18,6 +18,7 @@ class AEnemyBase;
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerDied);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPauseGame);
 
 UCLASS()
 class FYP_API AMiraiKomachi : public ACombatant
@@ -30,6 +31,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 		FPlayerDied PlayerDied;
+	UPROPERTY(BlueprintAssignable)
+		FPauseGame GamePause;
+	void SendPauseGame() { GamePause.Broadcast();}
 	
 	bool bCanAttack;
 	bool bIsRolling;

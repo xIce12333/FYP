@@ -18,10 +18,15 @@ private:
 	UFUNCTION()
 		void OnPlayerDied();
 
+	UFUNCTION()
+		void OnPauseButtonPressed();
+
 	virtual void BeginPlay() override;
 	AMiraiKomachi* Player;
 protected:
 	UFUNCTION(BlueprintImplementableEvent)
 		void ShowDiedMenu();
+	UFUNCTION(BlueprintImplementableEvent)
+		void ShowPauseMenu();
 
 };
