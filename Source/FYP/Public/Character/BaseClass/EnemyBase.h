@@ -92,6 +92,7 @@ public:
 		void AttackEnd();
 
 	void FacePlayer();
+	void HandleBeingGuarded();
 	
 protected:
 	// Called when the game starts or when spawned

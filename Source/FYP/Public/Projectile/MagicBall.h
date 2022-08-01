@@ -18,4 +18,6 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	
+private:
+	void FaceCamera();
 };

@@ -3,6 +3,7 @@
 
 #include "Projectile/ProjectileBase.h"
 
+#include "Character/BaseClass/EnemyBase.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -51,18 +52,29 @@ void AProjectileBase::HitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedCompon
 	if (OtherActor->ActorHasTag("Weapon") || OtherActor->ActorHasTag("Player"))
 	{
 		if (Player->bIsGuarding)
-			HandleGuarded();
+			HandleGuarded();	// Player guard the attack
 		else
 		{
-			Player->ApplyDamage(Damage);
-			this->Destroy();
+			const float MinDamage = Damage * 0.9;
+			const float MaxDamage = Damage * 1.1;
+			Player->ApplyDamage(static_cast<int>(FMath::RandRange(MinDamage, MaxDamage)));
+			Destroy();
 		}
 	}
 	else if (OtherActor->ActorHasTag("Enemy"))
 	{
-		return;
+		if (OtherActor == GetOwner())
+		{
+			AEnemyBase* OwnerEnemy = Cast<AEnemyBase>(OtherActor);
+			if (!OwnerEnemy) return;
+			OwnerEnemy->HandleBeingGuarded(); // The projectile hits back the enemy
+		}
+		else
+		{
+			return;				// The projectile should pass through other enemy
+		}
 	}
-	this->Destroy();
+	Destroy();
 }
 
 void AProjectileBase::HandleGuarded()

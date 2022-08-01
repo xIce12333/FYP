@@ -22,7 +22,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float LaunchSpeed = 500;
+		float LaunchSpeed = 700;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float SurvivalTime = 8;
@@ -48,7 +48,6 @@ public:
 	virtual void HitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor
 		, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 		bool bFromSweep, const FHitResult& SweepResult);
-	
 };
 
 

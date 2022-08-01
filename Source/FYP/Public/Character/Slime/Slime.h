@@ -16,21 +16,27 @@ class FYP_API ASlime : public AEnemyBase
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = Animations)
-		UAnimMontage* M_Melee;
+		UAnimMontage* M_Backstep;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = Animations)
 		UAnimMontage* M_Shoot;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")	
-		float MeleeRange = 200;
+		float BackStepRange = 400;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")	
+		float BackStepSpeed = 600;
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 		void SpawnMagicball();
 
 	virtual void Tick(float DeltaSeconds) override;
+	
+	void ShootAttack();
+
+	void HandleHitByMagicball();
 private:
 	virtual void StateAttack() override;
-
-	void ShootAttack();
-	void NormalAttack();
+	
+	void BackStep();
 	
 };

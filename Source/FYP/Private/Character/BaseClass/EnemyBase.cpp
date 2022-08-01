@@ -85,16 +85,10 @@ void AEnemyBase::HandleHitWeapon()
 	AMiraiKomachi* Komachi = Cast<AMiraiKomachi>(Player);
 	if (Komachi && Komachi->CheckGuardSuccessful(this))
 	{
+		// guard successful
 		bCanDealDamage = false;
 		Komachi->GuardSuccessful();
-		if (GetCurrentMontage()) StopAnimMontage();
-		if (!CheckStun() && M_Choke)		
-		{
-			LaunchCharacter(-GetActorRotation().Vector()* KnockBackSpeed, true, true);
-			PlayAnimMontage(M_Choke);
-		}
-		else
-			ChangeState(EnemyState::STUN);
+		HandleBeingGuarded();
 	}
 }
 
@@ -104,13 +98,7 @@ void AEnemyBase::HandleHitPlayer(AMiraiKomachi* Target)
 	if (!bIsStrongAttack && Target->CheckGuardSuccessful(this))
 	{
 		Target->GuardSuccessful();
-		if (GetCurrentMontage()) StopAnimMontage();
-		if (!CheckStun() && M_Choke)		
-		{
-			PlayAnimMontage(M_Choke);
-		}
-		else
-			ChangeState(EnemyState::STUN);
+		HandleBeingGuarded();
 	}
 	else 
 	{
@@ -120,6 +108,18 @@ void AEnemyBase::HandleHitPlayer(AMiraiKomachi* Target)
 	}
 }
 
+
+void AEnemyBase::HandleBeingGuarded()
+{
+	if (GetCurrentMontage()) StopAnimMontage();
+	if (!CheckStun() && M_Choke)		
+	{
+		LaunchCharacter(-GetActorRotation().Vector()* KnockBackSpeed, true, true);
+		PlayAnimMontage(M_Choke);
+	}
+	else
+		ChangeState(EnemyState::STUN);
+}
 
 bool AEnemyBase::CheckStun()
 {

@@ -10,29 +10,37 @@ void ASlime::Tick(float DeltaSeconds)
 
 void ASlime::StateAttack()
 {
-/*	if (FindPlayerDistance() > MeleeRange)
-		ShootAttack();
-	else
-	{
-		NormalAttack();
-	} */
 	if (bIsAttacking) return;
 	if (AIController) AIController->StopMovement();
 	bIsAttacking = true;
 	FacePlayer();
-	ShootAttack();
+	if (FindPlayerDistance() < BackStepRange)		// Player is too close, backstep first and then shoot
+	{
+		BackStep();
+		return;
+	}
+	// Player is far away, shoot directly
+	const float StartAttackDelay = FMath::RandRange(StartAttackDelayMin, StartAttackDelayMax);
+	GetWorldTimerManager().SetTimer(AttackTimer, this, &ASlime::ShootAttack, StartAttackDelay);
 }
 
 void ASlime::ShootAttack()
 {
+	
 	if (!M_Shoot) return;
-	UE_LOG(LogTemp, Warning, TEXT("play shoot"));
-	PlayAnimMontage(M_Shoot);
+	PlayAnimMontage(M_Shoot, 0.5);
 }
 
-void ASlime::NormalAttack()
+void ASlime::HandleHitByMagicball()
 {
-	if (!M_Melee) return;
-	PlayAnimMontage(M_Melee);
+	if (!CheckStun()) return;
+	// is stunning
+	ChangeState(EnemyState::STUN);
+}
+
+void ASlime::BackStep()
+{
+	if (!M_Backstep) return;
+	PlayAnimMontage(M_Backstep);
 }
 
