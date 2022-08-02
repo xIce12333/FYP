@@ -75,6 +75,8 @@ public:
 	bool bIsStrongAttack = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float WanderSpeed = 150;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float AttackSpeed = 700;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float KnockBackSpeed = 500;
@@ -148,4 +150,15 @@ protected:
 	void StunEnd();
 	void HandleHitWeapon();
 	void HandleHitPlayer(AMiraiKomachi* Target);
+	void FindRandomPosition();
+
+	UFUNCTION(BlueprintImplementableEvent)
+		void AIWanderEvent();
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float RandomMovementRadius = 1000;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		FVector OriginPosition;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bAIMoving = false;
 };

@@ -2,6 +2,8 @@
 
 
 #include "Character/BaseClass/EnemyBase.h"
+
+#include "NavigationSystem.h"
 #include "Blueprint/UserWidget.h"
 #include "Character/Komachi/MiraiKomachi.h"
 #include "Kismet/GameplayStatics.h"
@@ -30,11 +32,11 @@ void AEnemyBase::BeginPlay()
 	AIController = Cast<AAIController>(GetController());
 	AttackHitBoxLeft->OnComponentBeginOverlap.AddDynamic(this, &AEnemyBase::AttackHitBoxOnBeginOverlap);
 	AttackHitBoxRight->OnComponentBeginOverlap.AddDynamic(this, &AEnemyBase::AttackHitBoxOnBeginOverlap);
-	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 	CurrentHealth = MaxHealth;
 	CurrentStunCount = MaxStunCount;
 	bIsStunning = false;
 	bIsInvulnerable = false;
+	OriginPosition = GetCharacterMovement()->GetActorLocation();
 }
 
 
@@ -108,6 +110,13 @@ void AEnemyBase::HandleHitPlayer(AMiraiKomachi* Target)
 	}
 }
 
+void AEnemyBase::FindRandomPosition()
+{
+	if(!AIController || bAIMoving) return;
+	bAIMoving = true;
+	AIWanderEvent();
+}
+
 
 void AEnemyBase::HandleBeingGuarded()
 {
@@ -179,15 +188,18 @@ void AEnemyBase::ChangeState(const EnemyState NewState)
 void AEnemyBase::StateIdle()
 {
 	if (!Player) return;
+	GetCharacterMovement()->MaxWalkSpeed = WanderSpeed;
 	const float PlayerDistance = FindPlayerDistance();
-	if (PlayerDistance < AttackRange)
+	
+	if (PlayerDistance < ChaseRange)
 	{
-		ChangeState(EnemyState::ATTACK);
-	}
-	else if (PlayerDistance < ChaseRange)
-	{
+		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 		ChangeState(EnemyState::CHASE);
-	} 
+	}
+	else
+	{
+		FindRandomPosition();
+	}
 		
 }
 
@@ -218,6 +230,7 @@ void AEnemyBase::StateStun()
 {
 	if (bIsStunning) return;
 	bIsStunning = true;
+	UE_LOG(LogTemp, Warning, TEXT("Stun"));
 	EnemyStun.Broadcast(true);
 	GetWorldTimerManager().SetTimer(StunTimer, this, &AEnemyBase::StunEnd, StunTime);
 }
@@ -285,15 +298,15 @@ void AEnemyBase::Attack()
 
 void AEnemyBase::MoveTowardsPlayer() const
 {
-	if(AIController)
-	{
-		FNavPathSharedPtr NavPath;
-		FAIMoveRequest MoveRequest;
+	if(!AIController) return;
 
-		MoveRequest.SetGoalActor(Player);
-		MoveRequest.SetAcceptanceRadius(MoveToTargetRadius);
-		AIController->MoveTo(MoveRequest, &NavPath);
-	}
+	FNavPathSharedPtr NavPath;
+	FAIMoveRequest MoveRequest;
+
+	MoveRequest.SetGoalActor(Player);
+	MoveRequest.SetAcceptanceRadius(MoveToTargetRadius);
+	AIController->MoveTo(MoveRequest, &NavPath);
+	
 }
 
 void AEnemyBase::AttackEnd()

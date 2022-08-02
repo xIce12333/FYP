@@ -52,26 +52,30 @@ void AProjectileBase::HitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedCompon
 	if (OtherActor->ActorHasTag("Weapon") || OtherActor->ActorHasTag("Player"))
 	{
 		if (Player->bIsGuarding)
+		{
 			HandleGuarded();	// Player guard the attack
+			return;
+		}
 		else
 		{
 			const float MinDamage = Damage * 0.9;
 			const float MaxDamage = Damage * 1.1;
 			Player->ApplyDamage(static_cast<int>(FMath::RandRange(MinDamage, MaxDamage)));
-			Destroy();
 		}
 	}
 	else if (OtherActor->ActorHasTag("Enemy"))
 	{
+		AEnemyBase* Enemy = Cast<AEnemyBase>(OtherActor);
+		if (!Enemy) return;
 		if (OtherActor == GetOwner())
 		{
-			AEnemyBase* OwnerEnemy = Cast<AEnemyBase>(OtherActor);
-			if (!OwnerEnemy) return;
-			OwnerEnemy->HandleBeingGuarded(); // The projectile hits back the enemy
+			Enemy->HandleBeingGuarded(); // The projectile hits back the enemy
 		}
 		else
 		{
-			return;				// The projectile should pass through other enemy
+			const float MinDamage = Damage * 0.9;
+			const float MaxDamage = Damage * 1.1;
+			Enemy->ApplyDamage(static_cast<int>(FMath::RandRange(MinDamage, MaxDamage)));  // The projectile will deal damage to other enemy
 		}
 	}
 	Destroy();
@@ -79,6 +83,7 @@ void AProjectileBase::HitBoxOnBeginOverlap(UPrimitiveComponent* OverlappedCompon
 
 void AProjectileBase::HandleGuarded()
 {
+	Player->GuardSuccessful();
 	Direction = Player->GetActorForwardVector().GetSafeNormal();
 	TimeElapsed = 0;
 }

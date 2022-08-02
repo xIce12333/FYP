@@ -12,6 +12,7 @@ void ASlime::StateAttack()
 {
 	if (bIsAttacking) return;
 	if (AIController) AIController->StopMovement();
+	UE_LOG(LogTemp, Warning, TEXT("Attack"));
 	bIsAttacking = true;
 	FacePlayer();
 	if (FindPlayerDistance() < BackStepRange)		// Player is too close, backstep first and then shoot
@@ -26,8 +27,7 @@ void ASlime::StateAttack()
 
 void ASlime::ShootAttack()
 {
-	
-	if (!M_Shoot) return;
+	if (bIsStunning || bIsDead || !M_Shoot) return;
 	PlayAnimMontage(M_Shoot, 0.5);
 }
 
@@ -40,7 +40,7 @@ void ASlime::HandleHitByMagicball()
 
 void ASlime::BackStep()
 {
-	if (!M_Backstep) return;
+	if (bIsStunning || bIsDead || !M_Backstep) return;
 	PlayAnimMontage(M_Backstep);
 }
 
